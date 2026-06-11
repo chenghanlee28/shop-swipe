@@ -271,13 +271,13 @@
     .card-deal-tag {
       display: inline-block; margin-top: 4px;
       background: rgba(255,71,87,0.92); color: #fff;
-      font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.8px;
       padding: 3px 10px; border-radius: 8px;
       text-transform: uppercase;
     }
     .card-tap-hint {
       margin-top: 8px;
-      font-size: 11px; color: rgba(255,255,255,0.42);
+      font-size: 12px; color: rgba(255,255,255,0.42);
       letter-spacing: 0.3px;
       display: flex; align-items: center; gap: 3px;
       pointer-events: none;
@@ -320,18 +320,90 @@
       animation: welfareShimmer 4.5s ease-in-out infinite;
     }
 
+    /* Holographic Foil overlay */
+    .holo-shimmer {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 15%,
+        rgba(255, 215, 0, 0.12) 25%,
+        rgba(255, 0, 128, 0.15) 35%,
+        rgba(0, 255, 255, 0.15) 45%,
+        rgba(0, 255, 0, 0.1) 55%,
+        rgba(255, 215, 0, 0.12) 65%,
+        transparent 75%
+      );
+      background-size: 250% 250%;
+      background-position: 50% 50%;
+      mix-blend-mode: color-dodge;
+      opacity: 0.65;
+      pointer-events: none;
+      z-index: 4;
+      transition: opacity 0.3s ease, background-position 0.1s ease;
+    }
+
+    /* Confetti Particles */
+    .welfare-confetti-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+      z-index: 100;
+      border-radius: 20%;
+      animation: confettiFall 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes confettiFall {
+      0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0.3) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
+
+    /* Banner shake animation */
+    .welfare-banner.show .welfare-banner-inner {
+      transform: translateY(0);
+      animation: bannerShake 0.65s ease-in-out 0.4s;
+    }
+    @keyframes bannerShake {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      15% { transform: translateY(-4px) rotate(-3deg); }
+      30% { transform: translateY(3px) rotate(2deg); }
+      45% { transform: translateY(-3px) rotate(-1.5deg); }
+      60% { transform: translateY(2px) rotate(1deg); }
+      75% { transform: translateY(-1px) rotate(-0.5deg); }
+    }
+
+    /* Welfare Stock Label styling */
+    .welfare-stock-label {
+      font-size: 12px; font-weight: 700; color: #ff4757;
+      background: rgba(255,71,87,0.14); padding: 2px 7px; border-radius: 6px;
+      letter-spacing: 0.3px; border: 1px solid rgba(255,71,87,0.25);
+      animation: stockPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes stockPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.04); opacity: 0.85; }
+    }
+
     /* ─── Swipe Indicators ─── */
     .like-indicator, .nope-indicator {
-      position: absolute; top: 22px;
-      padding: 7px 16px; border-radius: 10px;
-      font-size: 20px; font-weight: 900;
+      position: absolute; top: 32px;
+      padding: 8px 18px; border-radius: 8px;
+      font-size: 28px; font-weight: 900;
       opacity: 0; pointer-events: none; z-index: 10;
-      border: 3px solid; letter-spacing: 1px;
-      background: rgba(0,0,0,0.18);
-      backdrop-filter: blur(4px);
+      border: 4px solid; letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: opacity 0.1s ease, transform 0.1s ease;
+      background: rgba(0,0,0,0.06);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    .like-indicator { right: 20px; color: #3ddc84; border-color: #3ddc84; transform: rotate(15deg); }
-    .nope-indicator { left: 20px; color: #ff4757; border-color: #ff4757; transform: rotate(-15deg); }
+    .like-indicator { right: 28px; color: #3ddc84; border-color: #3ddc84; transform: rotate(-12deg) scale(0.9); }
+    .nope-indicator { left: 28px; color: #ff4757; border-color: #ff4757; transform: rotate(12deg) scale(0.9); }
 
     /* ─── Action Buttons ─── */
     .action-buttons {
@@ -355,19 +427,19 @@
     .btn-action:active { transform: scale(0.88) !important; }
     .btn-action:hover { transform: scale(1.08); }
     .btn-nope {
-      width: 64px; height: 64px; background: #fff; color: #ff4757; font-size: 28px;
+      width: 64px; height: 64px; background: #fff; color: #ff4757;
       box-shadow: 0 6px 24px rgba(255,71,87,0.2), 0 2px 8px rgba(0,0,0,0.07);
       border: 2px solid rgba(255,71,87,0.14);
     }
     .btn-nope:hover { box-shadow: 0 8px 28px rgba(255,71,87,0.3); }
     .btn-info {
-      width: 50px; height: 50px; background: #fff; color: var(--text-muted); font-size: 20px;
+      width: 50px; height: 50px; background: #fff; color: var(--text-muted);
       box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
       border: 1.5px solid rgba(0,0,0,0.08);
     }
     .btn-info:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.14); }
     .btn-like {
-      width: 64px; height: 64px; font-size: 28px;
+      width: 64px; height: 64px;
       background: linear-gradient(135deg, var(--pink), var(--pink-dark)); color: #fff;
       box-shadow: 0 6px 24px rgba(255,107,129,0.45), 0 2px 8px rgba(0,0,0,0.07);
       border: none;
@@ -377,7 +449,7 @@
     /* ─── Empty State ─── */
     .empty-state { text-align: center; display: none; padding: 32px 24px; }
     .empty-state.show { display: block; }
-    .empty-state-emoji { font-size: 72px; margin-bottom: 20px; }
+    .empty-state-emoji { line-height: 1; }
     .empty-state h2 { font-size: 24px; margin-bottom: 10px; font-weight: 800; }
     .empty-state p { color: var(--text-muted); margin-bottom: 28px; font-size: 15px; line-height: 1.6; }
     .btn-restart {
@@ -592,7 +664,7 @@
       text-align: center; padding: 40px 24px;
     }
     .success-screen.show { display: flex; }
-    .success-emoji { font-size: 80px; margin-bottom: 24px; animation: successPop 0.6s cubic-bezier(.34,1.56,.64,1); }
+    .success-emoji { margin-bottom: 24px; animation: successPop 0.6s cubic-bezier(.34,1.56,.64,1); line-height: 1; }
     @keyframes successPop {
       0%   { transform: scale(0); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -631,7 +703,7 @@
       position: absolute; top: 14px; right: 14px;
       background: rgba(0,0,0,0.38);
       backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      color: #fff; font-size: 11px; font-weight: 600;
+      color: #fff; font-size: 12px; font-weight: 600;
       padding: 4px 11px; border-radius: 12px;
       z-index: 3; pointer-events: none;
       border: 1px solid rgba(255,255,255,0.18);
@@ -640,12 +712,12 @@
 
     /* ─── Social proof / countdown row ─── */
     .card-social-proof {
-      font-size: 11px; color: rgba(255,255,255,0.55);
+      font-size: 13px; color: rgba(255,255,255,0.7);
       margin-top: 5px; letter-spacing: 0.1px;
     }
     .welfare-countdown {
       display: inline-block;
-      font-size: 12px; font-weight: 700;
+      font-size: 13px; font-weight: 700;
       color: #ffd43b; margin-top: 5px;
       letter-spacing: 0.5px;
     }
@@ -678,7 +750,7 @@
     /* ─── Product Condition Badge (card) ─── */
     .card-condition {
       position: absolute; top: 14px; left: 14px;
-      font-size: 11px; font-weight: 700;
+      font-size: 12px; font-weight: 700;
       padding: 5px 12px; border-radius: 14px;
       z-index: 3; pointer-events: none;
       letter-spacing: 0.5px;
@@ -736,20 +808,17 @@
     .ob-slides-wrap {
       flex: 1; display: flex; flex-direction: row;
       min-height: 0;
-      /* width is the sum of all slides; each slide is 100% of ob-container */
+      will-change: transform;
+      /* JS drives translateX for slide navigation and drag */
     }
     .ob-slide {
       flex: 0 0 100%; min-width: 100%;
-      display: none; /* JS toggles active */
+      display: flex; /* always rendered; transform positions them */
       flex-direction: column; align-items: center; justify-content: center;
       padding: 52px 28px 20px;
       color: #fff; text-align: center;
       overflow-y: auto; -webkit-overflow-scrolling: touch;
-    }
-    .ob-slide.active { display: flex; animation: obSlideIn 0.36s ease; }
-    @keyframes obSlideIn {
-      from { opacity: 0; transform: translateX(28px); }
-      to   { opacity: 1; transform: translateX(0); }
+      flex-shrink: 0;
     }
 
     /* Slide 1 — Welcome */
@@ -905,12 +974,93 @@
     }
     .ob-next-btn:hover { background: rgba(255,255,255,0.2); }
 
+    /* ─── Orders Drawer ─── */
+    .orders-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(380px, 94vw);
+      background: #fff; z-index: 51;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.14);
+    }
+    .orders-drawer.open { transform: translateX(0); }
+    .orders-list { flex: 1; overflow-y: auto; padding: 12px 16px; -webkit-overflow-scrolling: touch; }
+    .orders-empty {
+      text-align: center; padding: 52px 20px; color: var(--text-muted);
+      font-size: 15px; line-height: 1.7;
+    }
+    .order-card {
+      border: 1px solid #efefef; border-radius: 16px;
+      margin-bottom: 12px; overflow: hidden;
+    }
+    .order-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px; background: #f9f9f9;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .order-id { font-size: 12px; font-weight: 600; color: var(--text); }
+    .order-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .order-status-badge {
+      font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .order-status-confirmed  { background: #e8f4ff; color: #0070f3; }
+    .order-status-preparing  { background: #fff3e0; color: #e67700; }
+    .order-status-shipped    { background: #e8fff3; color: #00875a; }
+    .order-status-delivering { background: #f0f5ff; color: #3b5bdb; }
+    .order-status-delivered  { background: #ebfbee; color: #2f9e44; }
+    .order-timeline { padding: 14px 16px 8px; }
+    .order-stage {
+      display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;
+    }
+    .order-stage:last-child { margin-bottom: 0; }
+    .stage-dot-wrap {
+      display: flex; flex-direction: column; align-items: center; flex-shrink: 0;
+    }
+    .stage-dot {
+      width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+      background: #e5e5ea; margin-top: 3px;
+    }
+    .stage-dot.done    { background: #2f9e44; }
+    .stage-dot.current { background: var(--pink); box-shadow: 0 0 0 3px rgba(255,107,129,0.2); }
+    .stage-line        { width: 2px; flex: 1; background: #e5e5ea; min-height: 14px; }
+    .stage-line.done   { background: #2f9e44; }
+    .stage-info { flex: 1; padding-bottom: 2px; }
+    .stage-label      { font-size: 13px; font-weight: 600; color: var(--text); }
+    .stage-label.muted { font-weight: 400; color: var(--text-muted); }
+    .stage-desc       { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .order-items-row {
+      display: flex; gap: 6px; padding: 10px 16px;
+      border-top: 1px solid #f5f5f5;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .order-item-thumb {
+      width: 42px; height: 42px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+    }
+    .order-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px 14px; font-size: 13px;
+      border-top: 1px solid #f5f5f5;
+    }
+    .order-total-label  { color: var(--text-muted); }
+    .order-total-amount { font-weight: 700; color: var(--pink); }
+    .btn-view-orders {
+      background: rgba(255,107,129,0.08); border: 1.5px solid rgba(255,107,129,0.25);
+      color: var(--pink); cursor: pointer;
+      padding: 13px 32px; border-radius: 24px; font-size: 15px; font-weight: 600;
+      margin-top: 16px; transition: background var(--transition);
+    }
+    .btn-view-orders:hover { background: rgba(255,107,129,0.14); }
+    /* SVG icon buttons in header */
+    .btn-icon svg { display: block; }
+
     /* ─── Responsive: 600px (large phone / small tablet) ─── */
     @media (min-width: 600px) {
       #app { max-width: 520px; }
       .card-stack { width: min(420px, 100%); }
-      .btn-nope, .btn-like { width: 70px; height: 70px; font-size: 30px; }
-      .btn-info { width: 54px; height: 54px; font-size: 22px; }
+      .btn-nope, .btn-like { width: 70px; height: 70px; }
+      .btn-info { width: 54px; height: 54px; }
       .action-buttons { gap: 22px; padding: 12px 24px; padding-bottom: max(14px, env(safe-area-inset-bottom, 14px)); }
     }
 
@@ -918,8 +1068,8 @@
     @media (min-width: 768px) {
       #app { max-width: 560px; }
       .card-stack { width: min(460px, 100%); }
-      .btn-nope, .btn-like { width: 74px; height: 74px; font-size: 32px; }
-      .btn-info { width: 58px; height: 58px; font-size: 24px; }
+      .btn-nope, .btn-like { width: 74px; height: 74px; }
+      .btn-info { width: 58px; height: 58px; }
       .action-buttons { gap: 26px; padding: 14px 28px; padding-bottom: max(14px, env(safe-area-inset-bottom, 14px)); }
       .modal-overlay { justify-content: center; align-items: center; }
       .modal-sheet { border-radius: 24px; max-height: 85vh; }
@@ -933,8 +1083,8 @@
         box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 24px 80px rgba(0,0,0,0.1);
       }
       .card-stack { width: min(500px, 100%); }
-      .btn-nope, .btn-like { width: 78px; height: 78px; font-size: 34px; }
-      .btn-info { width: 62px; height: 62px; font-size: 26px; }
+      .btn-nope, .btn-like { width: 78px; height: 78px; }
+      .btn-info { width: 62px; height: 62px; }
       .action-buttons { gap: 30px; padding: 16px 32px; padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
       .modal-sheet { max-height: 80vh; }
     }
@@ -946,8 +1096,8 @@
       .progress-bar-wrap { padding: 3px 16px 2px; }
       .card-area { padding: 4px 12px 2px; }
       .action-buttons { padding: 6px 16px; gap: 14px; padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)); }
-      .btn-nope, .btn-like { width: 52px; height: 52px; font-size: 22px; }
-      .btn-info { width: 42px; height: 42px; font-size: 18px; }
+      .btn-nope, .btn-like { width: 52px; height: 52px; }
+      .btn-info { width: 42px; height: 42px; }
       /* Compact onboarding for landscape phones */
       .ob-card-demo-wrap { display: none; }
       .ob-tagline { margin: 6px 0 14px; }
@@ -967,8 +1117,11 @@
       <span class="header-logo-sub">Shop Swipe</span>
     </div>
     <div class="header-actions">
+      <button class="btn-icon" id="btn-open-orders" title="我的訂單" aria-label="我的訂單" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
       <button class="btn-icon" id="btn-open-cart" title="購物車" aria-label="購物車">
-        🛒
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="cart-badge" id="cart-badge">0</span>
       </button>
       <button class="btn-login" id="btn-header-login">登入</button>
@@ -979,6 +1132,7 @@
             <div class="user-menu-name" id="menu-name"></div>
             <div class="user-menu-email" id="menu-email"></div>
           </div>
+          <div class="user-menu-item" id="btn-orders-menu">我的訂單</div>
           <div class="user-menu-item" id="btn-logout">登出</div>
         </div>
       </div>
@@ -988,11 +1142,13 @@
   <!-- Card Area -->
   <div class="card-area" id="card-area">
     <div class="welfare-banner" id="welfare-banner">
-      <div class="welfare-banner-inner">🎁 福利商品登場！</div>
+      <div class="welfare-banner-inner">福利商品限時上架</div>
     </div>
     <div class="card-stack" id="card-stack"></div>
     <div class="empty-state" id="empty-state">
-      <div class="empty-state-emoji">🎉</div>
+      <div class="empty-state-emoji" style="font-size:72px;margin-bottom:20px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+      </div>
       <h2>看完了！</h2>
       <p>你已經看完全部 50 件商品<br>喜歡的都加進購物車了嗎？</p>
       <button class="btn-restart" id="btn-restart">重新瀏覽</button>
@@ -1001,9 +1157,15 @@
 
   <!-- Action Buttons -->
   <div class="action-buttons" id="action-buttons">
-    <button class="btn-action btn-nope" id="btn-nope" title="跳過 (←)" aria-label="跳過">✕</button>
-    <button class="btn-action btn-info" id="btn-info" title="詳情 (I)" aria-label="詳情">ℹ</button>
-    <button class="btn-action btn-like" id="btn-like" title="喜歡 (→)" aria-label="喜歡">❤</button>
+    <button class="btn-action btn-nope" id="btn-nope" title="跳過 (←)" aria-label="跳過">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <button class="btn-action btn-info" id="btn-info" title="詳情 (I)" aria-label="詳情">
+      <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
+    <button class="btn-action btn-like" id="btn-like" title="喜歡 (→)" aria-label="喜歡">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
   </div>
 
 </div><!-- /#app -->
@@ -1014,12 +1176,16 @@
 <!-- Cart Drawer -->
 <div class="cart-drawer" id="cart-drawer">
   <div class="drawer-header">
-    <div class="drawer-title">🛒 購物車</div>
-    <button class="btn-close-drawer" id="btn-close-cart">✕</button>
+    <div class="drawer-title">購物車</div>
+    <button class="btn-close-drawer" id="btn-close-cart">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
   </div>
   <div class="cart-items" id="cart-items">
     <div class="cart-empty">
-      <div class="cart-empty-emoji">🛒</div>
+      <div class="cart-empty-emoji" style="font-size:52px;margin-bottom:14px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      </div>
       <div>購物車是空的<br>快去滑一滑吧！</div>
     </div>
   </div>
@@ -1038,7 +1204,7 @@
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title">商品詳情</div>
-      <button class="btn-close-modal" id="btn-close-product-modal">✕</button>
+      <button class="btn-close-modal" id="btn-close-product-modal"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <img src="" alt="" class="product-modal-img" id="product-modal-img" />
     <div class="product-modal-body">
@@ -1060,7 +1226,9 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="login-modal-body">
-      <div class="login-modal-icon">👤</div>
+      <div class="login-modal-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
       <div class="login-modal-title">登入帳號</div>
       <div class="login-modal-sub">登入後即可完成結帳，<br>並記錄你的訂單記錄</div>
       <div class="login-options">
@@ -1088,7 +1256,7 @@
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-title">填寫訂單</div>
-      <button class="btn-close-modal" id="btn-close-checkout">✕</button>
+      <button class="btn-close-modal" id="btn-close-checkout"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="checkout-body">
       <div class="order-summary" id="checkout-summary"></div>
@@ -1114,7 +1282,7 @@
           <textarea class="form-textarea" id="field-notes" placeholder="如有特殊需求請填寫…"></textarea>
         </div>
         <div class="payment-note">
-          💳 <strong>付款方式：</strong>目前僅支援貨到付款，線上刷卡將於近期開放（ECPay 綠界金流）。
+          <strong>付款方式：</strong>目前僅支援貨到付款，線上刷卡將於近期開放（ECPay 綠界金流）。
         </div>
         <button type="submit" class="btn-submit-order">確認送出訂單</button>
       </form>
@@ -1124,14 +1292,30 @@
 
 <!-- Success Screen -->
 <div class="success-screen" id="success-screen">
-  <div class="success-emoji">🎊</div>
+  <div class="success-emoji">
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+  </div>
   <div class="success-title">訂單送出成功！</div>
   <div class="success-sub" id="success-sub">感謝您的訂購<br>我們將盡快與您聯繫確認</div>
-  <button class="btn-back-home" id="btn-back-home">繼續逛逛</button>
+  <button class="btn-view-orders" id="btn-view-orders-success">查看訂單進度</button>
+  <button class="btn-back-home" id="btn-back-home" style="margin-top:10px">繼續逛逛</button>
 </div>
 
 <!-- Toast Container -->
 <div class="toast-container" id="toast-container"></div>
+
+<!-- Orders Drawer -->
+<div class="orders-drawer" id="orders-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">我的訂單</div>
+    <button class="btn-close-drawer" id="btn-close-orders">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="orders-list" id="orders-list">
+    <!-- populated by JS -->
+  </div>
+</div>
 
 <!-- Onboarding Overlay -->
 <div class="onboarding-overlay" id="onboarding">
@@ -1161,7 +1345,7 @@
           </div>
         </div>
         <div class="ob-notify-banner">
-          🔔&nbsp; 今日 <strong>3 件</strong>福利品上架・最高省 <strong>55%</strong>
+          今日 <strong>3 件</strong>福利品上架・最高省 <strong>55%</strong>
         </div>
       </div>
 
@@ -1192,17 +1376,17 @@
             </div>
           </div>
         </div>
-        <div class="ob-tip">💡 鍵盤：← → 滑動・I 查看詳情・Esc 關閉視窗</div>
+        <div class="ob-tip">鍵盤快捷：← → 滑動・I 查看詳情・Esc 關閉視窗</div>
       </div>
 
       <!-- Slide 3: Today's Deals -->
       <div class="ob-slide">
-        <div class="ob-slide-title">🔔 今日限時福利品</div>
+        <div class="ob-slide-title">今日限時福利品</div>
         <div class="ob-slide-sub">成本價出清・數量有限・先搶先得</div>
         <div class="ob-deals" id="ob-deals">
           <!-- populated by JS from PRODUCTS_INLINE welfare items -->
         </div>
-        <div class="ob-deal-note">⚡ 右滑即可加入購物車・僅限今日</div>
+        <div class="ob-deal-note">右滑即可加入購物車・數量有限</div>
         <button class="ob-start-btn" id="onboarding-start">立即開始探索 →</button>
       </div>
 

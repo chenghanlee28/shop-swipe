@@ -256,7 +256,7 @@ function createCardElement(product, dataIdx) {
     <img class="card-img" src="${product.image}" alt="${product.name}" loading="lazy" draggable="false" />
     <div class="card-gradient"></div>
     ${product.welfare
-      ? '<div class="welfare-label">🎁 福利品</div>'
+      ? '<div class="welfare-label">福利品</div>'
       : (product.condition ? `<div class="card-condition ${getConditionClass(product.condition)}">${product.condition}</div>` : '')}
     ${product.category ? `<div class="card-category">${product.category}</div>` : ''}
     <div class="card-info">
@@ -270,8 +270,8 @@ function createCardElement(product, dataIdx) {
       </div>
       ${product.welfare
         ? `<div class="welfare-countdown" data-pid="${product.id}"></div>
-           ${savingsPct >= 40 ? `<div class="card-deal-tag">⚡ 成本價出清 · 限量</div>` : ''}`
-        : `<div class="card-social-proof">🔥 ${getSocialProof(product.id)} 人今天加入購物車</div>`
+           ${savingsPct >= 40 ? `<div class="card-deal-tag">成本價出清 · 限量</div>` : ''}`
+        : `<div class="card-social-proof">${getSocialProof(product.id)} 人加入購物車</div>`
       }
       <div class="card-tap-hint">點擊查看詳情</div>
     </div>
@@ -461,7 +461,7 @@ function showEmptyState() {
       ${topCatEntry ? `
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <div class="stat-num stat-cat">🏆 ${topCatEntry[0]}</div>
+        <div class="stat-num stat-cat">${topCatEntry[0]}</div>
         <div class="stat-label">最愛分類</div>
       </div>` : ''}
     </div>
@@ -499,7 +499,7 @@ function addToCart(product) {
   }
   updateCartBadge();
   showToast(
-    product.welfare ? `🎁 福利品已加入！省了 NT$${(product.originalPrice - product.price).toLocaleString()}` : `❤ 已加入購物車：${product.name}`,
+    product.welfare ? `福利品已加入！省了 NT$${(product.originalPrice - product.price).toLocaleString()}` : `已加入購物車：${product.name}`,
     product.welfare ? 'welfare' : ''
   );
 }
@@ -761,11 +761,11 @@ function renderCheckoutSummary() {
 
 function submitOrder(e) {
   e.preventDefault();
-  const name = document.getElementById('field-name').value.trim();
-  const phone = document.getElementById('field-phone').value.trim();
-  const email = document.getElementById('field-email').value.trim();
+  const name    = document.getElementById('field-name').value.trim();
+  const phone   = document.getElementById('field-phone').value.trim();
+  const email   = document.getElementById('field-email').value.trim();
   const address = document.getElementById('field-address').value.trim();
-  const notes = document.getElementById('field-notes').value.trim();
+  const notes   = document.getElementById('field-notes').value.trim();
 
   if (!name || !phone || !address) {
     showToast('請填寫必填欄位（姓名、手機、地址）');
@@ -773,6 +773,20 @@ function submitOrder(e) {
   }
 
   const total = cart.reduce((sum, i) => sum + i.product.price * i.qty, 0);
+
+  // Persist order to localStorage
+  const orderRecord = {
+    id: 'ORD-' + Date.now().toString(36).toUpperCase(),
+    createdAt: new Date().toISOString(),
+    items: cart.map(({ product, qty }) => ({
+      product: { id: product.id, name: product.name, price: product.price, image: product.image },
+      qty,
+    })),
+    total,
+    customer: { name, phone, email, address, notes },
+  };
+  saveOrder(orderRecord);
+
   document.getElementById('success-sub').innerHTML =
     `感謝 ${name} 的訂購！<br>訂單金額 NT$${total.toLocaleString()}，我們將盡快聯繫您確認。`;
 
@@ -856,7 +870,21 @@ document.getElementById('btn-info').addEventListener('click', triggerInfo);
 
 document.getElementById('btn-open-cart').addEventListener('click', openCart);
 document.getElementById('btn-close-cart').addEventListener('click', closeCart);
-document.getElementById('drawer-overlay').addEventListener('click', closeCart);
+document.getElementById('drawer-overlay').addEventListener('click', () => {
+  if (document.getElementById('orders-drawer').classList.contains('open')) closeOrdersDrawer();
+  else closeCart();
+});
+
+document.getElementById('btn-open-orders').addEventListener('click', openOrdersDrawer);
+document.getElementById('btn-close-orders').addEventListener('click', closeOrdersDrawer);
+document.getElementById('btn-orders-menu').addEventListener('click', () => {
+  document.getElementById('user-menu').classList.remove('open');
+  openOrdersDrawer();
+});
+document.getElementById('btn-view-orders-success').addEventListener('click', () => {
+  document.getElementById('success-screen').classList.remove('show');
+  openOrdersDrawer();
+});
 
 document.getElementById('btn-checkout').addEventListener('click', openCheckoutModal);
 
@@ -904,12 +932,115 @@ document.getElementById('btn-back-home').addEventListener('click', () => {
 });
 
 /* ═══════════════════════════════════════════════
+   ORDER TRACKING
+═══════════════════════════════════════════════ */
+
+const ORDER_STAGES = [
+  { key: 'confirmed',   label: '訂單確認', desc: '已收到您的訂單' },
+  { key: 'preparing',  label: '準備中',   desc: '正在為您備貨' },
+  { key: 'shipped',    label: '已出貨',   desc: '商品已交付物流' },
+  { key: 'delivering', label: '配送中',   desc: '配送員正在途中' },
+  { key: 'delivered',  label: '已送達',   desc: '商品已送達，感謝您的購買！' },
+];
+
+function computeOrderStageIdx(createdAt) {
+  const mins = (Date.now() - new Date(createdAt).getTime()) / 60000;
+  if (mins < 2)   return 0;
+  if (mins < 15)  return 1;
+  if (mins < 45)  return 2;
+  if (mins < 120) return 3;
+  return 4;
+}
+
+function saveOrder(order) {
+  const orders = JSON.parse(localStorage.getItem('swipe_orders') || '[]');
+  orders.unshift(order);
+  if (orders.length > 20) orders.pop();
+  localStorage.setItem('swipe_orders', JSON.stringify(orders));
+  document.getElementById('btn-open-orders').style.display = '';
+}
+
+function loadOrders() {
+  return JSON.parse(localStorage.getItem('swipe_orders') || '[]');
+}
+
+function openOrdersDrawer() {
+  renderOrders();
+  document.getElementById('orders-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeOrdersDrawer() {
+  document.getElementById('orders-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+function renderOrders() {
+  const orders = loadOrders();
+  const container = document.getElementById('orders-list');
+  if (!container) return;
+
+  if (orders.length === 0) {
+    container.innerHTML = '<div class="orders-empty">尚無訂單記錄<br><small style="font-size:13px">結帳後訂單會顯示在這裡</small></div>';
+    return;
+  }
+
+  container.innerHTML = orders.map(order => {
+    const stageIdx = computeOrderStageIdx(order.createdAt);
+    const stage = ORDER_STAGES[stageIdx];
+    const statusClass = `order-status-${stage.key}`;
+    const d = new Date(order.createdAt);
+    const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+    const stageLines = ORDER_STAGES.map((s, i) => {
+      const isDone    = i < stageIdx;
+      const isCurrent = i === stageIdx;
+      const isLast    = i === ORDER_STAGES.length - 1;
+      return `
+        <div class="order-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot ${isDone ? 'done' : isCurrent ? 'current' : ''}"></div>
+            ${!isLast ? `<div class="stage-line ${isDone ? 'done' : ''}"></div>` : ''}
+          </div>
+          <div class="stage-info">
+            <div class="stage-label ${!isDone && !isCurrent ? 'muted' : ''}">${s.label}</div>
+            ${isCurrent ? `<div class="stage-desc">${s.desc}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    const thumbs = order.items.slice(0, 6).map(({ product }) =>
+      `<img class="order-item-thumb" src="${product.image}" alt="${product.name}" loading="lazy" />`
+    ).join('');
+
+    return `
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-id">${order.id}</div>
+            <div class="order-date">${dateStr} · ${order.customer?.name || ''}</div>
+          </div>
+          <div class="order-status-badge ${statusClass}">${stage.label}</div>
+        </div>
+        <div class="order-timeline">${stageLines}</div>
+        <div class="order-items-row">${thumbs}</div>
+        <div class="order-total-row">
+          <span class="order-total-label">訂單金額</span>
+          <span class="order-total-amount">NT$${order.total.toLocaleString()}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════ */
 
 function initOnboarding() {
-  const overlay = document.getElementById('onboarding');
-  if (!overlay) return;
+  const overlay   = document.getElementById('onboarding');
+  const container = overlay?.querySelector('.ob-container');
+  const wrap      = overlay?.querySelector('.ob-slides-wrap');
+  if (!overlay || !container || !wrap) return;
 
   let currentSlide = 0;
   const totalSlides = 3;
@@ -934,19 +1065,20 @@ function initOnboarding() {
     }).join('');
   }
 
+  function getSlideWidth() { return container.clientWidth || window.innerWidth; }
+
   function goToSlide(n) {
-    currentSlide = n;
-    document.querySelectorAll('.ob-slide').forEach((s, i) =>
-      s.classList.toggle('active', i === n)
-    );
+    currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+    wrap.style.transition = 'transform 0.38s cubic-bezier(.4,0,.2,1)';
+    wrap.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`;
     document.querySelectorAll('.ob-dot').forEach((d, i) =>
-      d.classList.toggle('active', i === n)
+      d.classList.toggle('active', i === currentSlide)
     );
     const nextBtn = document.getElementById('ob-next');
     if (nextBtn) {
-      const isLast = n === totalSlides - 1;
+      const isLast = currentSlide === totalSlides - 1;
       nextBtn.style.display = isLast ? 'none' : '';
-      if (!isLast) nextBtn.textContent = n === 0 ? '了解怎麼用 →' : '查看今日優惠 →';
+      if (!isLast) nextBtn.textContent = currentSlide === 0 ? '了解怎麼用 →' : '查看今日優惠 →';
     }
   }
 
@@ -954,6 +1086,44 @@ function initOnboarding() {
     overlay.classList.add('hiding');
     setTimeout(() => { overlay.style.display = 'none'; }, 480);
   }
+
+  // ── Drag / swipe to navigate slides ──
+  let dragStartX = 0, dragStartY = 0, dragDelta = 0;
+  let dragging = false, isHorizontalDrag = false;
+
+  wrap.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    isHorizontalDrag = false;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    dragDelta = 0;
+    wrap.style.transition = 'none';
+  }, { passive: true });
+
+  wrap.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    // Wait for first few pixels to determine drag axis
+    if (!isHorizontalDrag && Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    if (!isHorizontalDrag) {
+      if (Math.abs(dy) > Math.abs(dx)) { dragging = false; return; } // vertical — let browser scroll
+      isHorizontalDrag = true;
+    }
+    dragDelta = dx;
+    wrap.style.transform = `translateX(${-currentSlide * getSlideWidth() + dragDelta}px)`;
+  }, { passive: true });
+
+  function onDragEnd() {
+    if (!dragging || !isHorizontalDrag) { dragging = false; return; }
+    dragging = false;
+    if      (dragDelta < -60 && currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+    else if (dragDelta >  60 && currentSlide > 0)               goToSlide(currentSlide - 1);
+    else                                                         goToSlide(currentSlide);
+    dragDelta = 0;
+  }
+  wrap.addEventListener('pointerup',     onDragEnd, { passive: true });
+  wrap.addEventListener('pointercancel', onDragEnd, { passive: true });
 
   document.getElementById('ob-next')?.addEventListener('click', () => {
     if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
@@ -989,6 +1159,11 @@ async function init() {
   renderStack();
   startCountdownTimer();
   initOnboarding();
+
+  // Show orders button in header if prior orders exist
+  if (loadOrders().length > 0) {
+    document.getElementById('btn-open-orders').style.display = '';
+  }
 
   // Handle LINE OAuth callback
   if (window.location.search.includes('code=')) {
