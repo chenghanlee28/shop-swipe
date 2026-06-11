@@ -1110,6 +1110,27 @@
       accent-color: var(--pink); width: 17px; height: 17px; flex-shrink: 0; cursor: pointer;
     }
     .cancel-reason-item span { font-size: 14px; color: var(--text); }
+    /* Free-text input for "其他原因" */
+    .cancel-other-input {
+      display: none; /* toggled by JS when "other" radio is selected */
+      width: 100%; padding: 12px 14px; margin-bottom: 16px;
+      border: 1.5px solid #e8e8e8; border-radius: 12px;
+      font-size: 14px; font-family: inherit; outline: none;
+      resize: none; min-height: 76px; background: #fafafa;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .cancel-other-input.visible { display: block; }
+    .cancel-other-input:focus { border-color: var(--pink); background: #fff; box-shadow: 0 0 0 3px rgba(255,107,129,0.1); }
+    /* Remove-from-records button on cancelled orders */
+    .btn-remove-record {
+      width: 100%; padding: 10px;
+      background: none; border: none; border-top: 1px solid #f5f5f5;
+      color: var(--text-muted); cursor: pointer; font-size: 12px;
+      border-radius: 0 0 16px 16px;
+      transition: background var(--transition), color var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-remove-record:hover { background: #fafafa; color: #ff4757; }
     .cancel-modal-actions { display: flex; flex-direction: column; gap: 10px; }
     .btn-confirm-cancel {
       width: 100%; padding: 15px;
@@ -1427,6 +1448,8 @@
           <span>其他原因</span>
         </label>
       </div>
+      <textarea class="cancel-other-input" id="cancel-other-text"
+        placeholder="請說明您的取消原因…" maxlength="120"></textarea>
       <div class="cancel-modal-actions">
         <button class="btn-confirm-cancel" id="btn-confirm-cancel">確認取消訂單</button>
         <button class="btn-keep-order" id="btn-keep-order">保留訂單</button>

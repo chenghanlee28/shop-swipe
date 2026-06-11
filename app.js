@@ -899,10 +899,21 @@ document.getElementById('cancel-order-modal').addEventListener('click', (e) => {
   if (e.target === document.getElementById('cancel-order-modal')) closeCancelOrderModal();
 });
 
-// Cancel order button — event delegation (button is dynamically rendered inside orders list)
+// Show/hide free-text area when "其他原因" is selected
+document.querySelectorAll('input[name="cancel-reason"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    const otherInput = document.getElementById('cancel-other-text');
+    otherInput.classList.toggle('visible', radio.value === 'other' && radio.checked);
+    if (radio.value === 'other' && radio.checked) otherInput.focus();
+  });
+});
+
+// Orders list — event delegation for cancel + remove buttons
 document.getElementById('orders-list').addEventListener('click', (e) => {
-  const btn = e.target.closest('.btn-cancel-order');
-  if (btn) openCancelOrderModal(btn.dataset.orderId);
+  const cancelBtn = e.target.closest('.btn-cancel-order');
+  if (cancelBtn) { openCancelOrderModal(cancelBtn.dataset.orderId); return; }
+  const removeBtn = e.target.closest('.btn-remove-record');
+  if (removeBtn) { deleteOrder(removeBtn.dataset.orderId); }
 });
 
 document.getElementById('btn-checkout').addEventListener('click', openCheckoutModal);
@@ -1043,6 +1054,7 @@ function renderOrders() {
             <span class="order-total-label">訂單金額</span>
             <span class="order-total-amount" style="color:var(--text-muted)">NT$${order.total.toLocaleString()}</span>
           </div>
+          <button class="btn-remove-record" data-order-id="${order.id}">從記錄中移除</button>
         </div>`;
     }
 
@@ -1094,9 +1106,12 @@ let pendingCancelOrderId = null;
 
 function openCancelOrderModal(orderId) {
   pendingCancelOrderId = orderId;
-  // Reset radio to default
+  // Reset radio to first option and hide custom textarea
   const radios = document.querySelectorAll('input[name="cancel-reason"]');
   if (radios.length) radios[0].checked = true;
+  const otherInput = document.getElementById('cancel-other-text');
+  otherInput.value = '';
+  otherInput.classList.remove('visible');
   document.getElementById('cancel-order-modal').classList.add('open');
 }
 
@@ -1105,9 +1120,19 @@ function closeCancelOrderModal() {
   pendingCancelOrderId = null;
 }
 
+function deleteOrder(orderId) {
+  const orders = loadOrders().filter(o => o.id !== orderId);
+  localStorage.setItem('swipe_orders', JSON.stringify(orders));
+  renderOrders();
+}
+
 function confirmCancelOrder() {
   if (!pendingCancelOrderId) return;
-  const reason = document.querySelector('input[name="cancel-reason"]:checked')?.value || 'other';
+  let reason = document.querySelector('input[name="cancel-reason"]:checked')?.value || 'other';
+  if (reason === 'other') {
+    const customText = document.getElementById('cancel-other-text').value.trim();
+    if (customText) reason = customText; // store free-text directly
+  }
   const orders = loadOrders();
   const idx = orders.findIndex(o => o.id === pendingCancelOrderId);
   if (idx !== -1) {
