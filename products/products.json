@@ -1,0 +1,512 @@
+[
+    {
+        "id":  1,
+        "name":  "北歐陶瓷咖啡杯",
+        "price":  280,
+        "category":  "居家",
+        "image":  "images/product-1.jpg",
+        "description":  "手工拉坯陶瓷馬克杯，容量 380ml，霧面質感釉料，微波與洗碗機適用，讓每個早晨都更有儀式感。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  2,
+        "name":  "真皮皮革錢包",
+        "price":  1280,
+        "category":  "配件",
+        "image":  "images/product-2.jpg",
+        "description":  "頭層牛皮長夾，12 卡位設計，附拉鍊零錢袋，質感縫線收邊，越用越有光澤。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  3,
+        "name":  "帆布托特購物袋",
+        "price":  599,
+        "category":  "配件",
+        "image":  "images/product-3.jpg",
+        "description":  "加厚 12oz 帆布材質，可承重 15kg，附拉鍊內袋，簡約字母印刷，環保時尚兩不誤。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  4,
+        "name":  "925純銀簡約戒指",
+        "price":  780,
+        "category":  "珠寶",
+        "image":  "images/product-4.jpg",
+        "description":  "925純銀材質，拋光處理，細版設計百搭不挑手，可鐫刻文字，送禮自用皆宜。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  5,
+        "name":  "18K金幾何項鍊",
+        "price":  1480,
+        "category":  "珠寶",
+        "image":  "images/product-5.jpg",
+        "description":  "18K包金幾何吊墜，45cm 鏈長，防過敏電鍍工藝，鎖骨鏈設計，優雅有型。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  6,
+        "name":  "輕量慢跑運動鞋",
+        "price":  1580,
+        "category":  "鞋款",
+        "image":  "images/product-6.jpg",
+        "description":  "透氣飛織鞋面，EVA 緩震中底，橡膠防滑外底，重量僅 230g，日常跑步都合適。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  7,
+        "name":  "棉質寬版休閒T恤",
+        "price":  390,
+        "category":  "服飾",
+        "image":  "images/product-7.jpg",
+        "description":  "100% 純棉材質，寬版廓形，肩線下移設計，水洗不縮水，多色可選，穿搭必備基本款。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  8,
+        "name":  "高腰緊身瑜珈褲",
+        "price":  680,
+        "category":  "服飾",
+        "image":  "images/product-8.jpg",
+        "description":  "4 向彈力布料，高腰收腹設計，側邊深口袋，瑜珈跑步日常皆適用，修飾腿型效果佳。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  9,
+        "name":  "極簡風石英腕錶",
+        "price":  1980,
+        "category":  "配件",
+        "image":  "images/product-9.jpg",
+        "description":  "日本石英機芯，38mm 錶盤，真皮錶帶，藍寶石鏡面，10ATM 防水，男女皆宜設計。",
+        "welfare":  false,
+        "condition":  "展示品"
+    },
+    {
+        "id":  10,
+        "name":  "復古圓框太陽眼鏡",
+        "price":  890,
+        "category":  "配件",
+        "image":  "images/product-10.jpg",
+        "description":  "金屬圓框設計，UV400 防護鏡片，輕量 22g，附皮革眼鏡盒，復古感十足。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  11,
+        "name":  "防水筆電後背包",
+        "price":  1580,
+        "category":  "配件",
+        "image":  "images/product-11.jpg",
+        "description":  "可放 15.6 吋筆電，防水尼龍材質，USB 充電孔，隱藏式後背口袋，容量 25L。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  12,
+        "name":  "香氛大豆蠟燭",
+        "price":  360,
+        "category":  "居家",
+        "image":  "images/product-12.jpg",
+        "description":  "天然大豆蠟基底，薰衣草＋雪松複方香氣，燃燒約 45 小時，手工鑄造，附禮盒包裝。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  13,
+        "name":  "珍珠髮夾禮盒組",
+        "price":  260,
+        "category":  "配件",
+        "image":  "images/product-13.jpg",
+        "description":  "仿珍珠鑲嵌法式髮夾，六入組合裝，多種造型搭配，不傷髮質彈簧夾口，優雅日常兩用。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  14,
+        "name":  "矽膠保護手機殼",
+        "price":  290,
+        "category":  "3C配件",
+        "image":  "images/product-14.jpg",
+        "description":  "液態矽膠材質，防摔 3.5m 認證，相容 MagSafe 磁吸，手感細膩不沾指紋，多色可選。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  15,
+        "name":  "北歐風 LED 桌燈",
+        "price":  880,
+        "category":  "居家",
+        "image":  "images/product-15.jpg",
+        "description":  "木質燈座設計，三段色溫切換，USB-C 供電，360° 燈頭旋轉，護眼無頻閃認證。",
+        "welfare":  false,
+        "condition":  "展示品"
+    },
+    {
+        "id":  16,
+        "name":  "不鏽鋼真空保溫瓶",
+        "price":  580,
+        "category":  "居家",
+        "image":  "images/product-16.jpg",
+        "description":  "雙層真空304不鏽鋼，容量 500ml，保溫 24h / 保冷 12h，一鍵開蓋防漏設計。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  17,
+        "name":  "亞麻廚房圍裙",
+        "price":  480,
+        "category":  "居家",
+        "image":  "images/product-17.jpg",
+        "description":  "水洗亞麻材質，前胸雙口袋，可調節頸帶，透氣耐污，烹飪烘焙攝影都好搭。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  18,
+        "name":  "多肉植物組合盆栽",
+        "price":  199,
+        "category":  "居家",
+        "image":  "images/product-18.jpg",
+        "description":  "三種不同品種多肉植物，附白色陶瓷花器，桌面療癒小物，附施肥說明卡，易照顧。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  19,
+        "name":  "天然橡膠瑜珈墊",
+        "price":  890,
+        "category":  "運動",
+        "image":  "images/product-19.jpg",
+        "description":  "4mm 天然橡膠底層，PU 吸汗表面，防滑紋路，183×61cm 標準尺寸，附收納帶。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  20,
+        "name":  "竹製砧板刀具組",
+        "price":  850,
+        "category":  "居家",
+        "image":  "images/product-20.jpg",
+        "description":  "天然竹製砧板附三件不鏽鋼刀組，刀架一體成型，防黴抗菌竹材，廚房必備實用套組。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  21,
+        "name":  "真絲髮圈禮盒組",
+        "price":  240,
+        "category":  "配件",
+        "image":  "images/product-21.jpg",
+        "description":  "100% 桑蠶絲材質，五色裝禮盒，不傷髮絲不留痕，睡眠也適用，精緻禮盒附緞帶。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  22,
+        "name":  "彈力訓練阻力帶組",
+        "price":  299,
+        "category":  "運動",
+        "image":  "images/product-22.jpg",
+        "description":  "五段阻力等級，乳膠材質耐用不易斷，居家健身必備，附收納袋，適合全身訓練。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  23,
+        "name":  "牛皮護照夾票夾",
+        "price":  590,
+        "category":  "配件",
+        "image":  "images/product-23.jpg",
+        "description":  "植鞣真皮材質，可放護照/票卡/SIM 卡工具，RFID 防盜刷，旅行必備質感好物。",
+        "welfare":  false,
+        "condition":  "展示品"
+    },
+    {
+        "id":  24,
+        "name":  "玫瑰精華護手霜",
+        "price":  220,
+        "category":  "美妝",
+        "image":  "images/product-24.jpg",
+        "description":  "大馬士革玫瑰精華，質地輕盈快吸收，深層修護乾裂，50ml 隨身裝，無矽靈配方。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  25,
+        "name":  "精油香竹擴香瓶",
+        "price":  280,
+        "category":  "居家",
+        "image":  "images/product-25.jpg",
+        "description":  "天然藤條擴香，附 100ml 複方精油，持續釋香約 60 天，無火安全，玻璃瓶身設計。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  26,
+        "name":  "棒球帽鴨舌帽",
+        "price":  450,
+        "category":  "服飾",
+        "image":  "images/product-26.jpg",
+        "description":  "水洗棉材質，金屬扣調節帽圍，刺繡 LOGO 設計，防曬遮陽，男女通用多色可選。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  27,
+        "name":  "法蘭絨格紋毯子",
+        "price":  680,
+        "category":  "居家",
+        "image":  "images/product-27.jpg",
+        "description":  "雙面法蘭絨格紋，130×170cm，超柔軟觸感，可機洗，沙發毯午睡毯首選。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  28,
+        "name":  "手工陶瓷餐碗組",
+        "price":  320,
+        "category":  "居家",
+        "image":  "images/product-28.jpg",
+        "description":  "手工拉坯陶瓷碗兩入組，容量 480ml，可微波可洗碗機，質樸釉面色，早餐碗/湯碗適用。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  29,
+        "name":  "皮革手帳筆記本",
+        "price":  390,
+        "category":  "文具",
+        "image":  "images/product-29.jpg",
+        "description":  "PU 皮革封面，A5 尺寸，內附月計劃、週計劃、空白筆記，鬆緊帶固定，附書帶。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  30,
+        "name":  "棉麻儲物收納籃",
+        "price":  320,
+        "category":  "居家",
+        "image":  "images/product-30.jpg",
+        "description":  "棉麻混紡折疊收納籃，圓形大口設計，可收納玩具衣物，折疊後平放，多尺寸可選。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  31,
+        "name":  "10000mAh 行動電源",
+        "price":  590,
+        "category":  "3C配件",
+        "image":  "images/product-31.jpg",
+        "description":  "超薄卡片設計，22.5W 快充，雙向 USB-C，LED 電量顯示，支援 iPhone/Android。",
+        "welfare":  false,
+        "condition":  "展示品"
+    },
+    {
+        "id":  32,
+        "name":  "絨面繫帶踝靴",
+        "price":  1980,
+        "category":  "鞋款",
+        "image":  "images/product-32.jpg",
+        "description":  "麂皮絨面材質，5cm 方形粗跟，側拉鍊設計方便穿脫，增高顯瘦，秋冬必備款式。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  33,
+        "name":  "環保咖啡隨行杯",
+        "price":  580,
+        "category":  "居家",
+        "image":  "images/product-33.jpg",
+        "description":  "雙層隔熱玻璃+矽膠護套，350ml 容量，防漏旋蓋，可拆洗，取代紙杯減少碳排放。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  34,
+        "name":  "抽象版畫裝飾掛畫",
+        "price":  580,
+        "category":  "居家",
+        "image":  "images/product-34.jpg",
+        "description":  "北歐風抽象藝術版畫，A3 尺寸三聯幅，美術紙印刷，附鋁合金相框，開箱即可掛。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  35,
+        "name":  "1000片主題拼圖",
+        "price":  480,
+        "category":  "生活",
+        "image":  "images/product-35.jpg",
+        "description":  "台灣風景主題，1000片精切拼圖，厚紙版不易斷裂，完成尺寸 75×50cm，附收納袋。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  36,
+        "name":  "手工編織圓形地毯",
+        "price":  1280,
+        "category":  "居家",
+        "image":  "images/product-36.jpg",
+        "description":  "純棉手工編織，直徑 80cm 圓形，波西米亞風格配色，柔軟舒適，可機洗，臥房客廳適用。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  37,
+        "name":  "竹纖維毛巾浴巾組",
+        "price":  340,
+        "category":  "居家",
+        "image":  "images/product-37.jpg",
+        "description":  "竹纖維材質，70×140cm 浴巾＋35×75cm 毛巾各一，吸水快乾，天然抗菌，柔軟觸感。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  38,
+        "name":  "玻璃精油擴香機",
+        "price":  750,
+        "category":  "居家",
+        "image":  "images/product-38.jpg",
+        "description":  "超音波冷霧擴香，300ml 大容量，七彩氛圍燈，定時8h，適用精油/純露，附量杯。",
+        "welfare":  false,
+        "condition":  "展示品"
+    },
+    {
+        "id":  39,
+        "name":  "珍珠鑲嵌耳環組",
+        "price":  480,
+        "category":  "珠寶",
+        "image":  "images/product-39.jpg",
+        "description":  "S925 銀針，仿淡水珍珠，三種尺寸搭配，可當耳針或夾式，附絨布珠寶收納盒。",
+        "welfare":  false,
+        "condition":  "全新"
+    },
+    {
+        "id":  40,
+        "name":  "木質桌面文具收納架",
+        "price":  340,
+        "category":  "文具",
+        "image":  "images/product-40.jpg",
+        "description":  "松木多格收納，附筆筒、名片槽、小物格，三色可選，穩固底座，辦公桌必備整理好幫手。",
+        "welfare":  false,
+        "condition":  "庫存品"
+    },
+    {
+        "id":  41,
+        "name":  "Apple AirPods Pro 2",
+        "price":  2290,
+        "originalPrice":  7490,
+        "category":  "3C配件",
+        "image":  "images/product-41.jpg",
+        "description":  "主動降噪旗艦真無線耳機，H2 晶片，自適應透明模式，MagSafe 充電盒，續航 30h。福利品原因：外盒輕微磨損，耳機本體全新未使用，完整原廠配件，附保固卡。成本價出清！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  42,
+        "name":  "iPhone 15 128GB",
+        "price":  12900,
+        "originalPrice":  28900,
+        "category":  "3C配件",
+        "image":  "images/product-42.jpg",
+        "description":  "A16 仿生晶片，4800 萬畫素主鏡頭，USB-C，靈動島設計，全新未拆封。福利品原因：展示機包裝更換，機身全新，通過原廠功能檢測，成本價讓利，限量 5 台！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  43,
+        "name":  "Sony WH-1000XM5 耳機",
+        "price":  5990,
+        "originalPrice":  12900,
+        "category":  "3C配件",
+        "image":  "images/product-43.jpg",
+        "description":  "業界頂尖降噪耳罩耳機，LDAC 高解析，30h 長效續航，3min 快充 3h，可折疊設計。福利品原因：海外退貨商品，外觀完好如新，功能完整，含原廠保固。成本價出清！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  44,
+        "name":  "Apple Watch Series 9",
+        "price":  7900,
+        "originalPrice":  12900,
+        "category":  "3C配件",
+        "image":  "images/product-44.jpg",
+        "description":  "S9 晶片，Always-On 螢幕，血氧心率偵測，全天候血糖趨勢，IP68 防水，45mm GPS 版。福利品原因：換貨品，全新未使用，原廠密封包裝，成本讓利限搶！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  45,
+        "name":  "Nintendo Switch OLED",
+        "price":  6990,
+        "originalPrice":  10800,
+        "category":  "3C配件",
+        "image":  "images/product-45.jpg",
+        "description":  "7 吋 OLED 螢幕，64GB 內建儲存，有線 LAN 連接埠，新款白色主機底座。福利品原因：外箱輕微凹陷，主機全新完整配件，成本價出清，遊戲迷不容錯過！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  46,
+        "name":  "iPad Air M2 256GB",
+        "price":  16900,
+        "originalPrice":  24900,
+        "category":  "3C配件",
+        "image":  "images/product-46.jpg",
+        "description":  "M2 晶片，11 吋 Liquid Retina，支援 Apple Pencil Pro，WiFi 版，星光色。福利品原因：拍攝道具機，全新未啟用，外觀完美，成本出清，數量稀少！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  47,
+        "name":  "DJI Mini 4 Pro 空拍機",
+        "price":  18900,
+        "originalPrice":  28900,
+        "category":  "3C配件",
+        "image":  "images/product-47.jpg",
+        "description":  "249g 超輕機身，4K/60fps 錄影，全向避障，RC-N2 遙控器，最長 34 分鐘飛行時間。福利品原因：展示用途後封存，全新功能，成本讓利出清，空拍迷的好機會！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  48,
+        "name":  "Dyson Airwrap 造型器",
+        "price":  12900,
+        "originalPrice":  22900,
+        "category":  "美妝",
+        "image":  "images/product-48.jpg",
+        "description":  "Coanda 氣流造型技術，捲髮直髮吹髮三合一，防止極端高溫傷害，附六件造型頭。福利品原因：包裝盒損壞，機體全新未使用，含完整配件，成本價出清！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  49,
+        "name":  "GoPro HERO12 Black",
+        "price":  8900,
+        "originalPrice":  14900,
+        "category":  "3C配件",
+        "image":  "images/product-49.jpg",
+        "description":  "5.3K 60fps 旗艦錄影，HyperSmooth 6.0 防震，潛水 10m，前後雙螢幕，附配件組。福利品原因：外盒輕微磨損，相機全新無使用，成本出清，戶外玩家必搶！",
+        "welfare":  true,
+        "condition":  "福利品"
+    },
+    {
+        "id":  50,
+        "name":  "Samsung Galaxy Buds2 Pro",
+        "price":  3490,
+        "originalPrice":  7490,
+        "category":  "3C配件",
+        "image":  "images/product-50.jpg",
+        "description":  "ANC 主動降噪，24-bit Hi-Fi 音質，IPX7 防水，自動切換連接，續航 8+29h。福利品原因：包裝拆封但未使用，完整配件，附保固書，成本讓利！限量衝評價！",
+        "welfare":  true,
+        "condition":  "福利品"
+    }
+]

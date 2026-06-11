@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>小物快選 Shop Swipe</title>
+  <style>
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink: #ff6b81;
+      --pink-dark: #e8576d;
+      --pink-light: #ffe0e5;
+      --gold: #f59f00;
+      --gold-light: #fff3cd;
+      --line-green: #06C755;
+      --bg: #f2f2f7;
+      --card-bg: #1c1c2e;
+      --text: #1c1c1e;
+      --text-muted: #8e8e93;
+      --radius: 18px;
+      --shadow: 0 14px 44px rgba(0,0,0,0.18);
+      --shadow-btn: 0 6px 20px rgba(0,0,0,0.13);
+      --transition: 0.2s ease;
+    }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overscroll-behavior: none;
+    }
+
+    /* ─── App Layout ─── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* ─── Header ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+      min-height: 54px;
+    }
+    .header-logo { display: flex; align-items: baseline; gap: 6px; }
+    .header-logo-main {
+      font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-icon {
+      background: none; border: none; cursor: pointer; width: 40px; height: 40px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; transition: background var(--transition); position: relative;
+    }
+    .btn-icon:hover { background: rgba(0,0,0,0.06); }
+    .cart-badge {
+      position: absolute; top: 3px; right: 3px;
+      background: var(--pink); color: #fff;
+      font-size: 10px; font-weight: 700;
+      width: 17px; height: 17px; border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+    }
+    .cart-badge.visible { display: flex; }
+    .btn-login {
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
+      transition: opacity var(--transition);
+      box-shadow: 0 3px 12px rgba(255,107,129,0.4);
+    }
+    .btn-login:hover { opacity: 0.9; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--pink); cursor: pointer;
+    }
+    .user-menu {
+      position: absolute; top: 58px; right: 12px;
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.08); border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14); min-width: 170px; z-index: 100;
+      overflow: hidden; display: none;
+    }
+    .user-menu.open { display: block; }
+    .user-menu-item {
+      padding: 12px 16px; font-size: 14px; cursor: pointer;
+      transition: background var(--transition);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .user-menu-item:last-child { border-bottom: none; }
+    .user-menu-item:hover { background: rgba(0,0,0,0.04); }
+    .user-menu-name { font-weight: 600; }
+    .user-menu-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* progress bar removed — no count shown to user */
+
+    /* ─── Card Area ─── */
+    .card-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px 4px;
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .welfare-banner {
+      position: absolute; top: 6px; left: 0; right: 0;
+      text-align: center; z-index: 20;
+      pointer-events: none;
+    }
+    .welfare-banner-inner {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #e67700);
+      color: #fff; font-size: 13px; font-weight: 700;
+      padding: 7px 22px; border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(245,159,0,0.45);
+      transform: translateY(-70px);
+      transition: transform 0.5s cubic-bezier(.34,1.56,.64,1);
+      letter-spacing: 0.3px;
+    }
+    .welfare-banner.show .welfare-banner-inner { transform: translateY(0); }
+
+    /* ─── Card Stack ─── */
+    .card-stack {
+      position: relative;
+      width: min(380px, 100%);
+      aspect-ratio: 3 / 4;
+      max-height: 100%;
+    }
+
+    /* ─── Swipe Card — full-image Tinder style ─── */
+    .swipe-card {
+      position: absolute; inset: 0;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      transform-origin: center bottom;
+      will-change: transform;
+      touch-action: none;
+    }
+    .swipe-card:active { cursor: grabbing; }
+    .swipe-card.card-back-2 {
+      transform: scale(0.88) translateY(20px);
+      z-index: 1;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .swipe-card.card-back-1 {
+      transform: scale(0.94) translateY(10px);
+      z-index: 2;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.12);
+    }
+    .swipe-card.card-front {
+      transform: scale(1) translateY(0);
+      z-index: 3;
+    }
+
+    /* Smooth advance: applied by JS when the stack advances after a swipe */
+    .card-stack.is-advancing .swipe-card {
+      transition: transform 0.4s cubic-bezier(.4,0,.2,1),
+                  box-shadow 0.4s ease,
+                  opacity 0.3s ease;
+    }
+    /* Fly cards must not be slowed by the advance transition */
+    .card-stack.is-advancing .swipe-card.fly-right,
+    .card-stack.is-advancing .swipe-card.fly-left { transition: none; }
+    .swipe-card.fly-right {
+      animation: flyRight 0.45s cubic-bezier(.4,0,1,1) forwards;
+      z-index: 5;
+    }
+    .swipe-card.fly-left {
+      animation: flyLeft 0.45s cubic-bezier(.4,0,1,1) forwards;
+      z-index: 5;
+    }
+    @keyframes flyRight {
+      to { transform: translateX(140%) rotate(24deg); opacity: 0; }
+    }
+    @keyframes flyLeft {
+      to { transform: translateX(-140%) rotate(-24deg); opacity: 0; }
+    }
+
+    /* Image fills entire card */
+    .card-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* Dark gradient for text legibility */
+    .card-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.92) 0%,
+        rgba(0,0,0,0.72) 28%,
+        rgba(0,0,0,0.30) 52%,
+        rgba(0,0,0,0.06) 68%,
+        transparent 80%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Product info anchored at bottom over gradient */
+    .card-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 72px 18px 18px;
+      z-index: 2;
+      color: #fff;
+    }
+    .card-name {
+      font-size: clamp(16px, 4.5vw, 22px);
+      font-weight: 700; margin-bottom: 5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+      line-height: 1.25;
+    }
+    .card-price-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .card-price {
+      font-size: clamp(20px, 5.5vw, 28px);
+      font-weight: 800; color: #fff;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+      line-height: 1;
+    }
+    .card-original-price {
+      font-size: clamp(12px, 3vw, 15px);
+      color: rgba(255,255,255,0.65);
+      text-decoration: line-through; margin-left: 2px;
+    }
+    .card-savings {
+      font-size: 13px; background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff;
+      font-weight: 800; padding: 3px 10px; border-radius: 12px; margin-left: 6px;
+      letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(255,71,87,0.45);
+      animation: savingsPulse 2s ease-in-out infinite;
+    }
+    @keyframes savingsPulse {
+      0%, 100% { box-shadow: 0 2px 8px rgba(255,71,87,0.45); }
+      50% { box-shadow: 0 2px 14px rgba(255,71,87,0.75); }
+    }
+    .card-deal-tag {
+      display: inline-block; margin-top: 4px;
+      background: rgba(255,71,87,0.92); color: #fff;
+      font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      padding: 3px 10px; border-radius: 8px;
+      text-transform: uppercase;
+    }
+    .card-tap-hint {
+      margin-top: 8px;
+      font-size: 11px; color: rgba(255,255,255,0.42);
+      letter-spacing: 0.3px;
+      display: flex; align-items: center; gap: 3px;
+      pointer-events: none;
+    }
+    .card-tap-hint::after { content: '›'; font-size: 13px; }
+
+    /* Welfare label — positioned top-left over the image */
+    .welfare-label {
+      position: absolute; top: 14px; left: 14px;
+      background: linear-gradient(135deg, var(--gold), #e67700);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 5px 13px; border-radius: 20px;
+      z-index: 3;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      letter-spacing: 0.3px;
+      pointer-events: none;
+    }
+
+    /* ─── Welfare Card Animations ─── */
+    @keyframes welfareGlow {
+      0%, 100% { box-shadow: 0 0 0 2.5px var(--gold), 0 14px 44px rgba(0,0,0,0.18); }
+      50%       { box-shadow: 0 0 0 3.5px var(--gold), 0 0 32px rgba(245,159,0,0.55), 0 14px 44px rgba(0,0,0,0.18); }
+    }
+    @keyframes welfareShimmer {
+      0%   { transform: translateX(-180%) skewX(-18deg); opacity: 0; }
+      5%   { opacity: 1; }
+      45%  { transform: translateX(340%) skewX(-18deg); opacity: 0; }
+      100% { transform: translateX(340%) skewX(-18deg); opacity: 0; }
+    }
+
+    .welfare-card.card-front {
+      animation: welfareGlow 2.2s ease-in-out infinite;
+    }
+    .welfare-card.card-front::after {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 44%; height: 65%;
+      background: linear-gradient(105deg, transparent 25%, rgba(255,220,80,0.22) 50%, transparent 75%);
+      pointer-events: none; z-index: 4;
+      animation: welfareShimmer 4.5s ease-in-out infinite;
+    }
+
+    /* ─── Swipe Indicators ─── */
+    .like-indicator, .nope-indicator {
+      position: absolute; top: 22px;
+      padding: 7px 16px; border-radius: 10px;
+      font-size: 20px; font-weight: 900;
+      opacity: 0; pointer-events: none; z-index: 10;
+      border: 3px solid; letter-spacing: 1px;
+      background: rgba(0,0,0,0.18);
+      backdrop-filter: blur(4px);
+    }
+    .like-indicator { right: 20px; color: #3ddc84; border-color: #3ddc84; transform: rotate(15deg); }
+    .nope-indicator { left: 20px; color: #ff4757; border-color: #ff4757; transform: rotate(-15deg); }
+
+    /* ─── Action Buttons ─── */
+    .action-buttons {
+      display: flex; gap: 18px; align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+      flex-shrink: 0;
+      background: rgba(242,242,247,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    .btn-action {
+      border: none; cursor: pointer; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn-action:active { transform: scale(0.88) !important; }
+    .btn-action:hover { transform: scale(1.08); }
+    .btn-nope {
+      width: 64px; height: 64px; background: #fff; color: #ff4757; font-size: 28px;
+      box-shadow: 0 6px 24px rgba(255,71,87,0.2), 0 2px 8px rgba(0,0,0,0.07);
+      border: 2px solid rgba(255,71,87,0.14);
+    }
+    .btn-nope:hover { box-shadow: 0 8px 28px rgba(255,71,87,0.3); }
+    .btn-info {
+      width: 50px; height: 50px; background: #fff; color: var(--text-muted); font-size: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
+      border: 1.5px solid rgba(0,0,0,0.08);
+    }
+    .btn-info:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.14); }
+    .btn-like {
+      width: 64px; height: 64px; font-size: 28px;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark)); color: #fff;
+      box-shadow: 0 6px 24px rgba(255,107,129,0.45), 0 2px 8px rgba(0,0,0,0.07);
+      border: none;
+    }
+    .btn-like:hover { box-shadow: 0 8px 30px rgba(255,107,129,0.55); }
+
+    /* ─── Empty State ─── */
+    .empty-state { text-align: center; display: none; padding: 32px 24px; }
+    .empty-state.show { display: block; }
+    .empty-state-emoji { font-size: 72px; margin-bottom: 20px; }
+    .empty-state h2 { font-size: 24px; margin-bottom: 10px; font-weight: 800; }
+    .empty-state p { color: var(--text-muted); margin-bottom: 28px; font-size: 15px; line-height: 1.6; }
+    .btn-restart {
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      padding: 14px 36px; border-radius: 28px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(255,107,129,0.4);
+    }
+
+    /* ─── Cart Drawer ─── */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+    .cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(380px, 94vw);
+      background: #fff; z-index: 51;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.14);
+    }
+    .cart-drawer.open { transform: translateX(0); }
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px; border-bottom: 1px solid #f0f0f0;
+    }
+    .drawer-title { font-size: 18px; font-weight: 700; }
+    .btn-close-drawer {
+      background: none; border: none; cursor: pointer;
+      font-size: 20px; color: var(--text-muted);
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-close-drawer:hover { background: #f5f5f5; }
+    .cart-items { flex: 1; overflow-y: auto; padding: 12px 14px; -webkit-overflow-scrolling: touch; }
+    .cart-empty { text-align: center; padding: 52px 16px; color: var(--text-muted); font-size: 15px; }
+    .cart-empty-emoji { font-size: 52px; margin-bottom: 14px; }
+    .cart-item {
+      display: flex; gap: 12px; align-items: center;
+      padding: 12px; border-radius: 14px; margin-bottom: 8px;
+      background: #f9f9f9; border: 1px solid #eee;
+    }
+    .cart-item.welfare-item { background: var(--gold-light); border-color: #ffc078; }
+    .cart-item-img { width: 58px; height: 58px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-price { font-size: 13px; color: var(--pink); font-weight: 700; margin-top: 3px; }
+    .cart-item-actions { display: flex; align-items: center; gap: 5px; }
+    .qty-btn {
+      background: #fff; border: 1.5px solid #e0e0e0; border-radius: 7px;
+      width: 28px; height: 28px; cursor: pointer; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--text);
+    }
+    .qty-btn:hover { border-color: var(--pink); color: var(--pink); }
+    .qty-display { font-size: 14px; font-weight: 700; min-width: 22px; text-align: center; }
+    .btn-remove-item {
+      background: none; border: none; cursor: pointer;
+      color: #ccc; font-size: 17px; padding: 4px; line-height: 1; margin-left: 2px;
+    }
+    .btn-remove-item:hover { color: #ff4757; }
+    .cart-footer {
+      padding: 16px 18px; border-top: 1px solid #f0f0f0;
+      padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    }
+    .cart-total {
+      display: flex; justify-content: space-between;
+      font-size: 17px; font-weight: 700; margin-bottom: 12px;
+    }
+    .cart-total-price { color: var(--pink); }
+    .btn-checkout {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      border-radius: 14px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(255,107,129,0.4); transition: opacity var(--transition);
+    }
+    .btn-checkout:hover { opacity: 0.92; }
+
+    /* ─── Modal Base ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 60; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-sheet {
+      width: 100%; max-width: 480px; margin: 0 auto;
+      background: #fff; border-radius: 24px 24px 0 0;
+      max-height: 90vh; overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.38s cubic-bezier(.4,0,.2,1);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 44px; height: 5px; background: #e0e0e0; border-radius: 3px;
+      margin: 14px auto 0;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px 8px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .btn-close-modal {
+      background: #f5f5f5; border: none; cursor: pointer;
+      width: 30px; height: 30px; border-radius: 50%; font-size: 14px;
+      color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+    }
+    .btn-close-modal:hover { background: #ebebeb; }
+
+    /* ─── Product Detail Modal ─── */
+    .product-modal-img {
+      width: 100%;
+      height: clamp(200px, 42vh, 320px);
+      object-fit: cover;
+      display: block;
+    }
+    .product-modal-body { padding: 16px 20px 28px; }
+    .product-modal-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+    .product-modal-price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .product-modal-price { font-size: 28px; font-weight: 800; color: var(--pink); }
+    .product-modal-orig { font-size: 16px; color: var(--text-muted); text-decoration: line-through; }
+    .product-modal-savings {
+      font-size: 13px; color: var(--gold); font-weight: 700;
+      background: var(--gold-light); padding: 3px 10px; border-radius: 10px;
+    }
+    .product-modal-desc { font-size: 15px; line-height: 1.75; color: var(--text-muted); margin-bottom: 22px; }
+    .btn-add-to-cart {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      border-radius: 14px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(255,107,129,0.4); transition: opacity var(--transition);
+    }
+    .btn-add-to-cart:hover { opacity: 0.92; }
+
+    /* ─── Welfare badge (modal only) ─── */
+    .welfare-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #e67700);
+      color: #fff; font-size: 11px; font-weight: 700;
+      padding: 4px 12px; border-radius: 12px; margin-bottom: 8px;
+    }
+
+    /* ─── Login Modal ─── */
+    .login-modal-body { padding: 16px 24px 32px; text-align: center; }
+    .login-modal-icon { font-size: 52px; margin-bottom: 12px; }
+    .login-modal-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .login-modal-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 26px; line-height: 1.6; }
+    .login-options { display: flex; flex-direction: column; gap: 12px; }
+    .btn-social {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; border-radius: 14px; border: 1.5px solid #e8e8e8;
+      background: #fff; cursor: pointer; font-size: 15px; font-weight: 600;
+      transition: all var(--transition);
+    }
+    .btn-social:hover { border-color: #ccc; background: #fafafa; }
+    .btn-social-icon { font-size: 22px; }
+    .btn-google:hover { border-color: #4285F4; background: #f0f4ff; }
+    .btn-line { border-color: var(--line-green); background: var(--line-green); color: #fff; }
+    .btn-line:hover { background: #05a648; }
+    .btn-guest { color: var(--text-muted); border-style: dashed; }
+    .login-divider { font-size: 13px; color: var(--text-muted); margin: 2px 0; }
+
+    /* ─── Checkout Modal ─── */
+    .checkout-modal .modal-sheet { max-height: 96vh; }
+    .checkout-body { padding: 8px 20px 28px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; display: block; }
+    .form-input {
+      width: 100%; padding: 13px 15px; border: 1.5px solid #e8e8e8;
+      border-radius: 12px; font-size: 16px; outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      background: #fafafa;
+    }
+    .form-input:focus { border-color: var(--pink); background: #fff; box-shadow: 0 0 0 3px rgba(255,107,129,0.1); }
+    .form-textarea {
+      width: 100%; padding: 13px 15px; border: 1.5px solid #e8e8e8;
+      border-radius: 12px; font-size: 16px; outline: none; resize: none;
+      min-height: 80px; background: #fafafa;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-textarea:focus { border-color: var(--pink); background: #fff; box-shadow: 0 0 0 3px rgba(255,107,129,0.1); }
+    .order-summary { background: #f7f7f7; border-radius: 14px; padding: 15px; margin-bottom: 14px; }
+    .order-summary-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+    .order-line { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+    .order-line-total { font-weight: 700; border-top: 1px solid #e8e8e8; margin-top: 8px; padding-top: 10px; }
+    .payment-note {
+      background: #fff8e1; border: 1px solid #ffc078;
+      border-radius: 12px; padding: 13px 15px; margin-bottom: 14px;
+      font-size: 13px; color: #7c4d00;
+    }
+    .btn-submit-order {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      border-radius: 14px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(255,107,129,0.4); transition: opacity var(--transition);
+    }
+    .btn-submit-order:hover { opacity: 0.92; }
+
+    /* ─── Success Screen ─── */
+    .success-screen {
+      position: fixed; inset: 0; background: #fff;
+      z-index: 70; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 40px 24px;
+    }
+    .success-screen.show { display: flex; }
+    .success-emoji { font-size: 80px; margin-bottom: 24px; animation: successPop 0.6s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes successPop {
+      0%   { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-title { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+    .success-sub { font-size: 16px; color: var(--text-muted); margin-bottom: 36px; line-height: 1.6; }
+    .btn-back-home {
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      padding: 15px 40px; border-radius: 28px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 24px rgba(255,107,129,0.45);
+    }
+
+    /* ─── Toast ─── */
+    .toast-container {
+      position: fixed;
+      bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+      left: 50%; transform: translateX(-50%);
+      z-index: 90; display: flex; flex-direction: column; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(28,28,30,0.90); color: #fff;
+      padding: 11px 22px; border-radius: 22px;
+      font-size: 14px; font-weight: 500;
+      backdrop-filter: blur(10px);
+      animation: toastIn 0.3s cubic-bezier(.34,1.56,.64,1), toastOut 0.3s 2.2s ease forwards;
+      white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
+    }
+    .toast.welfare { background: linear-gradient(135deg, var(--gold), #e67700); }
+    @keyframes toastIn { from { opacity:0; transform:translateY(20px) scale(.88); } to { opacity:1; transform:none; } }
+    @keyframes toastOut { to { opacity:0; transform:translateY(-10px) scale(.92); } }
+
+    /* ─── Category badge (top-right of card) ─── */
+    .card-category {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(0,0,0,0.38);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      color: #fff; font-size: 11px; font-weight: 600;
+      padding: 4px 11px; border-radius: 12px;
+      z-index: 3; pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.18);
+      letter-spacing: 0.3px;
+    }
+
+    /* ─── Social proof / countdown row ─── */
+    .card-social-proof {
+      font-size: 11px; color: rgba(255,255,255,0.55);
+      margin-top: 5px; letter-spacing: 0.1px;
+    }
+    .welfare-countdown {
+      display: inline-block;
+      font-size: 12px; font-weight: 700;
+      color: #ffd43b; margin-top: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Card entrance animation — opacity only, no transform to avoid clipping ─── */
+    @keyframes cardFadeIn {
+      from { opacity: 0; }
+    }
+    .swipe-card.card-entering {
+      animation: cardFadeIn 0.45s ease forwards;
+    }
+
+    /* ─── Empty state swipe stats ─── */
+    .swipe-stats {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin: 20px 0 8px;
+      background: #f7f7f7; border-radius: 18px;
+      padding: 16px 8px; border: 1px solid #eee;
+    }
+    .stat-item { flex: 1; text-align: center; padding: 0 8px; }
+    .stat-num {
+      font-size: 22px; font-weight: 800; margin-bottom: 4px;
+    }
+    .stat-num.stat-right { color: var(--pink); }
+    .stat-num.stat-left  { color: #8e8e93; }
+    .stat-num.stat-cat   { color: var(--gold); font-size: 16px; }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .stat-divider { width: 1px; height: 40px; background: #e5e5ea; flex-shrink: 0; }
+
+    /* ─── Product Condition Badge (card) ─── */
+    .card-condition {
+      position: absolute; top: 14px; left: 14px;
+      font-size: 11px; font-weight: 700;
+      padding: 5px 12px; border-radius: 14px;
+      z-index: 3; pointer-events: none;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .card-condition.cond-new {
+      background: rgba(0,184,148,0.92); color: #fff;
+    }
+    .card-condition.cond-stock {
+      background: rgba(30,30,50,0.72);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      color: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .card-condition.cond-display {
+      background: rgba(108,92,231,0.9); color: #fff;
+    }
+
+    /* ─── Product Condition Badge (modal) ─── */
+    .product-modal-condition {
+      display: inline-block; margin-bottom: 8px;
+      font-size: 12px; font-weight: 700;
+      padding: 4px 12px; border-radius: 12px; letter-spacing: 0.5px;
+    }
+    .product-modal-condition.cond-new  { background: #e8faf5; color: #009d7e; }
+    .product-modal-condition.cond-stock { background: #f0f0f5; color: #636e72; }
+    .product-modal-condition.cond-display { background: #f0eeff; color: #5e4fc2; }
+
+    /* ─── Onboarding v2 ─── */
+    .onboarding-overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #1a0812 0%, #2d1020 55%, #1a0812 100%);
+      z-index: 200; overflow: hidden;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .onboarding-overlay.hiding { opacity: 0; pointer-events: none; transform: scale(1.06); }
+
+    .ob-container {
+      height: 100%; display: flex; flex-direction: column;
+      max-width: 480px; margin: 0 auto; position: relative;
+      overflow: hidden;
+    }
+
+    /* Skip button */
+    .ob-skip-btn {
+      position: absolute; top: max(14px, env(safe-area-inset-top, 14px)); right: 16px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.32); font-size: 13px;
+      padding: 6px 12px; border-radius: 12px; z-index: 10;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ob-skip-btn:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.07); }
+
+    /* Slides */
+    .ob-slides-wrap {
+      flex: 1; display: flex; flex-direction: row;
+      min-height: 0;
+      /* width is the sum of all slides; each slide is 100% of ob-container */
+    }
+    .ob-slide {
+      flex: 0 0 100%; min-width: 100%;
+      display: none; /* JS toggles active */
+      flex-direction: column; align-items: center; justify-content: center;
+      padding: 52px 28px 20px;
+      color: #fff; text-align: center;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .ob-slide.active { display: flex; animation: obSlideIn 0.36s ease; }
+    @keyframes obSlideIn {
+      from { opacity: 0; transform: translateX(28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Slide 1 — Welcome */
+    .ob-logo {
+      font-size: 38px; font-weight: 900; letter-spacing: -1.5px;
+      background: linear-gradient(135deg, var(--pink), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ob-logo-en { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 3px; margin-top: 3px; }
+    .ob-tagline { font-size: 16px; color: rgba(255,255,255,0.72); margin: 12px 0 26px; line-height: 1.6; }
+
+    .ob-card-demo-wrap {
+      position: relative; width: 152px; height: 204px; margin: 0 auto 26px;
+    }
+    .ob-card-demo {
+      position: absolute; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 36px rgba(0,0,0,0.55);
+    }
+    .ob-card-demo-back2 {
+      inset: 0; transform: scale(0.86) translateY(18px); z-index: 1;
+      background: linear-gradient(135deg, #2a1a3a, #3a2050);
+    }
+    .ob-card-demo-back1 {
+      inset: 0; transform: scale(0.93) translateY(9px); z-index: 2;
+      background: linear-gradient(135deg, #2e1f44, #3e2858);
+    }
+    .ob-card-demo-front {
+      inset: 0; z-index: 3;
+      animation: demoSway 3s ease-in-out infinite;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    @keyframes demoSway {
+      0%, 100% { transform: rotate(-5deg) translateX(-7px); }
+      50%       { transform: rotate(5deg)  translateX(7px); }
+    }
+    .ob-card-demo-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover; opacity: 0.9;
+    }
+    .ob-card-demo-footer {
+      position: relative; z-index: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%);
+      padding: 24px 12px 12px;
+    }
+    .ob-card-demo-name { font-size: 11px; font-weight: 700; color: #fff; }
+    .ob-card-demo-price { font-size: 14px; font-weight: 800; color: var(--pink); margin-top: 2px; }
+    .ob-card-demo-cat {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      background: rgba(0,0,0,0.38); backdrop-filter: blur(6px);
+      color: rgba(255,255,255,0.8); font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 8px;
+    }
+
+    .ob-notify-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+      padding: 11px 20px; border-radius: 28px;
+      color: rgba(255,255,255,0.82); font-size: 14px;
+      animation: notifyPulse 3s ease-in-out infinite;
+    }
+    @keyframes notifyPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,107,129,0); }
+      50%     { box-shadow: 0 0 0 6px rgba(255,107,129,0.12); }
+    }
+    .ob-notify-banner strong { color: var(--gold); }
+
+    /* Slide 2 — Tutorial */
+    .ob-slide-title {
+      font-size: 24px; font-weight: 800; margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .ob-slide-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
+    .ob-tutorial-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .ob-tutorial-item {
+      display: flex; align-items: center; gap: 16px; text-align: left;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 16px; padding: 15px 18px;
+    }
+    .ob-tutorial-icon {
+      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; font-weight: 800; border: 2px solid;
+    }
+    .ob-icon-nope { border-color:#ff4757; color:#ff4757; background:rgba(255,71,87,0.12); }
+    .ob-icon-like { border-color:var(--pink); color:var(--pink); background:rgba(255,107,129,0.12); }
+    .ob-icon-info { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.06); }
+    .ob-tutorial-action { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .ob-tutorial-hint { font-size: 12px; color: rgba(255,255,255,0.45); }
+    .ob-tip {
+      margin-top: 18px; font-size: 11.5px; color: rgba(255,255,255,0.3);
+      padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.07); width: 100%;
+    }
+
+    /* Slide 3 — Today's Deals */
+    .ob-deals { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 12px; }
+    .ob-deal-card {
+      display: flex; align-items: center; gap: 12px; text-align: left;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 10px 14px;
+    }
+    .ob-deal-img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+    .ob-deal-info { flex: 1; min-width: 0; }
+    .ob-deal-name { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ob-deal-price { font-size: 14px; font-weight: 800; color: var(--pink); margin-top: 2px; }
+    .ob-deal-orig { font-size: 11px; color: rgba(255,255,255,0.35); text-decoration: line-through; margin-left: 5px; font-weight: 400; }
+    .ob-deal-badge {
+      background: linear-gradient(135deg, #ff4757, #c0392b);
+      color: #fff; font-size: 12px; font-weight: 800;
+      padding: 5px 9px; border-radius: 10px; white-space: nowrap; flex-shrink: 0;
+    }
+    .ob-deal-note { font-size: 11.5px; color: rgba(255,255,255,0.35); margin-bottom: 18px; }
+
+    .ob-start-btn {
+      display: block; width: 100%;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff; border: none; cursor: pointer;
+      padding: 16px; border-radius: 16px;
+      font-size: 17px; font-weight: 700; letter-spacing: 0.3px;
+      box-shadow: 0 8px 28px rgba(255,107,129,0.5);
+      transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.15s;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    }
+    .ob-start-btn:hover { transform: scale(1.03); box-shadow: 0 10px 32px rgba(255,107,129,0.6); }
+    .ob-start-btn:active { transform: scale(0.97); }
+
+    /* Navigation bar */
+    .ob-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+      flex-shrink: 0;
+    }
+    .ob-dots { display: flex; gap: 7px; align-items: center; }
+    .ob-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.22);
+      transition: all 0.3s ease;
+    }
+    .ob-dot.active { background: var(--pink); width: 22px; border-radius: 4px; }
+    .ob-next-btn {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14);
+      color: #fff; cursor: pointer;
+      padding: 10px 22px; border-radius: 24px;
+      font-size: 14px; font-weight: 600;
+      transition: background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ob-next-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* ─── Responsive: 600px (large phone / small tablet) ─── */
+    @media (min-width: 600px) {
+      #app { max-width: 520px; }
+      .card-stack { width: min(420px, 100%); }
+      .btn-nope, .btn-like { width: 70px; height: 70px; font-size: 30px; }
+      .btn-info { width: 54px; height: 54px; font-size: 22px; }
+      .action-buttons { gap: 22px; padding: 12px 24px; padding-bottom: max(14px, env(safe-area-inset-bottom, 14px)); }
+    }
+
+    /* ─── Responsive: 768px (iPad portrait) ─── */
+    @media (min-width: 768px) {
+      #app { max-width: 560px; }
+      .card-stack { width: min(460px, 100%); }
+      .btn-nope, .btn-like { width: 74px; height: 74px; font-size: 32px; }
+      .btn-info { width: 58px; height: 58px; font-size: 24px; }
+      .action-buttons { gap: 26px; padding: 14px 28px; padding-bottom: max(14px, env(safe-area-inset-bottom, 14px)); }
+      .modal-overlay { justify-content: center; align-items: center; }
+      .modal-sheet { border-radius: 24px; max-height: 85vh; }
+      .header-logo-main { font-size: 22px; }
+    }
+
+    /* ─── Responsive: 1024px (laptop / iPad landscape) ─── */
+    @media (min-width: 1024px) {
+      #app {
+        max-width: 600px;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 24px 80px rgba(0,0,0,0.1);
+      }
+      .card-stack { width: min(500px, 100%); }
+      .btn-nope, .btn-like { width: 78px; height: 78px; font-size: 34px; }
+      .btn-info { width: 62px; height: 62px; font-size: 26px; }
+      .action-buttons { gap: 30px; padding: 16px 32px; padding-bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
+      .modal-sheet { max-height: 80vh; }
+    }
+
+    /* ─── Landscape phone (short viewport) ─── */
+    @media (max-height: 520px) and (orientation: landscape) {
+      header { min-height: 46px; padding: 6px 16px; }
+      .header-logo-main { font-size: 16px; }
+      .progress-bar-wrap { padding: 3px 16px 2px; }
+      .card-area { padding: 4px 12px 2px; }
+      .action-buttons { padding: 6px 16px; gap: 14px; padding-bottom: max(8px, env(safe-area-inset-bottom, 8px)); }
+      .btn-nope, .btn-like { width: 52px; height: 52px; font-size: 22px; }
+      .btn-info { width: 42px; height: 42px; font-size: 18px; }
+      /* Compact onboarding for landscape phones */
+      .ob-card-demo-wrap { display: none; }
+      .ob-tagline { margin: 6px 0 14px; }
+      .ob-slide { padding: 40px 24px 14px; }
+      .ob-tutorial-list { gap: 8px; }
+      .ob-tutorial-item { padding: 10px 14px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header>
+    <div class="header-logo">
+      <span class="header-logo-main">小物快選</span>
+      <span class="header-logo-sub">Shop Swipe</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btn-open-cart" title="購物車" aria-label="購物車">
+        🛒
+        <span class="cart-badge" id="cart-badge">0</span>
+      </button>
+      <button class="btn-login" id="btn-header-login">登入</button>
+      <div id="user-avatar-wrap" style="display:none; position:relative;">
+        <img src="" alt="avatar" class="user-avatar" id="user-avatar" />
+        <div class="user-menu" id="user-menu">
+          <div class="user-menu-item">
+            <div class="user-menu-name" id="menu-name"></div>
+            <div class="user-menu-email" id="menu-email"></div>
+          </div>
+          <div class="user-menu-item" id="btn-logout">登出</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Card Area -->
+  <div class="card-area" id="card-area">
+    <div class="welfare-banner" id="welfare-banner">
+      <div class="welfare-banner-inner">🎁 福利商品登場！</div>
+    </div>
+    <div class="card-stack" id="card-stack"></div>
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-emoji">🎉</div>
+      <h2>看完了！</h2>
+      <p>你已經看完全部 50 件商品<br>喜歡的都加進購物車了嗎？</p>
+      <button class="btn-restart" id="btn-restart">重新瀏覽</button>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons" id="action-buttons">
+    <button class="btn-action btn-nope" id="btn-nope" title="跳過 (←)" aria-label="跳過">✕</button>
+    <button class="btn-action btn-info" id="btn-info" title="詳情 (I)" aria-label="詳情">ℹ</button>
+    <button class="btn-action btn-like" id="btn-like" title="喜歡 (→)" aria-label="喜歡">❤</button>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-drawer" id="cart-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">🛒 購物車</div>
+    <button class="btn-close-drawer" id="btn-close-cart">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">
+      <div class="cart-empty-emoji">🛒</div>
+      <div>購物車是空的<br>快去滑一滑吧！</div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>合計</span>
+      <span class="cart-total-price" id="cart-total">NT$0</span>
+    </div>
+    <button class="btn-checkout" id="btn-checkout">前往結帳</button>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">商品詳情</div>
+      <button class="btn-close-modal" id="btn-close-product-modal">✕</button>
+    </div>
+    <img src="" alt="" class="product-modal-img" id="product-modal-img" />
+    <div class="product-modal-body">
+      <div id="product-modal-welfare-badge"></div>
+      <div class="product-modal-name" id="product-modal-name"></div>
+      <div class="product-modal-price-row">
+        <div class="product-modal-price" id="product-modal-price"></div>
+        <div class="product-modal-orig" id="product-modal-orig" style="display:none"></div>
+        <div class="product-modal-savings" id="product-modal-savings" style="display:none"></div>
+      </div>
+      <div class="product-modal-desc" id="product-modal-desc"></div>
+      <button class="btn-add-to-cart" id="btn-modal-add-to-cart">加入購物車</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="login-modal-body">
+      <div class="login-modal-icon">👤</div>
+      <div class="login-modal-title">登入帳號</div>
+      <div class="login-modal-sub">登入後即可完成結帳，<br>並記錄你的訂單記錄</div>
+      <div class="login-options">
+        <button class="btn-social btn-google" id="btn-google-login">
+          <span class="btn-social-icon">🇬</span>
+          <span>Google 帳號登入</span>
+        </button>
+        <button class="btn-social btn-line" id="btn-line-login">
+          <span class="btn-social-icon">💬</span>
+          <span>LINE 帳號登入</span>
+        </button>
+        <div class="login-divider">── 或 ──</div>
+        <button class="btn-social btn-guest" id="btn-guest-login">
+          <span class="btn-social-icon">👤</span>
+          <span>訪客結帳（不儲存紀錄）</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay checkout-modal" id="checkout-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">填寫訂單</div>
+      <button class="btn-close-modal" id="btn-close-checkout">✕</button>
+    </div>
+    <div class="checkout-body">
+      <div class="order-summary" id="checkout-summary"></div>
+      <form id="checkout-form">
+        <div class="form-group">
+          <label class="form-label">姓名 *</label>
+          <input type="text" class="form-input" id="field-name" placeholder="收件人姓名" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">手機 *</label>
+          <input type="tel" class="form-input" id="field-phone" placeholder="09xx-xxxxxx" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="field-email" placeholder="email@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">收件地址 *</label>
+          <input type="text" class="form-input" id="field-address" placeholder="縣市 + 鄉鎮市區 + 地址" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">備註</label>
+          <textarea class="form-textarea" id="field-notes" placeholder="如有特殊需求請填寫…"></textarea>
+        </div>
+        <div class="payment-note">
+          💳 <strong>付款方式：</strong>目前僅支援貨到付款，線上刷卡將於近期開放（ECPay 綠界金流）。
+        </div>
+        <button type="submit" class="btn-submit-order">確認送出訂單</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Success Screen -->
+<div class="success-screen" id="success-screen">
+  <div class="success-emoji">🎊</div>
+  <div class="success-title">訂單送出成功！</div>
+  <div class="success-sub" id="success-sub">感謝您的訂購<br>我們將盡快與您聯繫確認</div>
+  <button class="btn-back-home" id="btn-back-home">繼續逛逛</button>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Onboarding Overlay -->
+<div class="onboarding-overlay" id="onboarding">
+  <div class="ob-container">
+
+    <!-- Skip button -->
+    <button class="ob-skip-btn" id="ob-skip">略過</button>
+
+    <!-- Slides -->
+    <div class="ob-slides-wrap">
+
+      <!-- Slide 1: Welcome -->
+      <div class="ob-slide active">
+        <div class="ob-logo">小物快選</div>
+        <div class="ob-logo-en">SHOP SWIPE</div>
+        <div class="ob-tagline">像滑 Tinder 一樣<br>滑出你的生活好物</div>
+        <div class="ob-card-demo-wrap">
+          <div class="ob-card-demo ob-card-demo-back2"></div>
+          <div class="ob-card-demo ob-card-demo-back1"></div>
+          <div class="ob-card-demo ob-card-demo-front">
+            <img src="images/product-1.jpg" alt="" class="ob-card-demo-img" />
+            <div class="ob-card-demo-cat">居家</div>
+            <div class="ob-card-demo-footer">
+              <div class="ob-card-demo-name">北歐陶瓷咖啡杯</div>
+              <div class="ob-card-demo-price">NT$280</div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-notify-banner">
+          🔔&nbsp; 今日 <strong>3 件</strong>福利品上架・最高省 <strong>55%</strong>
+        </div>
+      </div>
+
+      <!-- Slide 2: Tutorial -->
+      <div class="ob-slide">
+        <div class="ob-slide-title">怎麼使用？</div>
+        <div class="ob-slide-sub">三個動作，輕鬆購物</div>
+        <div class="ob-tutorial-list">
+          <div class="ob-tutorial-item">
+            <div class="ob-tutorial-icon ob-icon-nope">✕</div>
+            <div>
+              <div class="ob-tutorial-action">左滑跳過</div>
+              <div class="ob-tutorial-hint">不感興趣的商品，快速略過</div>
+            </div>
+          </div>
+          <div class="ob-tutorial-item">
+            <div class="ob-tutorial-icon ob-icon-like">❤</div>
+            <div>
+              <div class="ob-tutorial-action">右滑喜歡</div>
+              <div class="ob-tutorial-hint">加入購物車，稍後一次結帳</div>
+            </div>
+          </div>
+          <div class="ob-tutorial-item">
+            <div class="ob-tutorial-icon ob-icon-info">ℹ</div>
+            <div>
+              <div class="ob-tutorial-action">點擊查看詳情</div>
+              <div class="ob-tutorial-hint">點開商品說明後可直接加入購物車</div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-tip">💡 鍵盤：← → 滑動・I 查看詳情・Esc 關閉視窗</div>
+      </div>
+
+      <!-- Slide 3: Today's Deals -->
+      <div class="ob-slide">
+        <div class="ob-slide-title">🔔 今日限時福利品</div>
+        <div class="ob-slide-sub">成本價出清・數量有限・先搶先得</div>
+        <div class="ob-deals" id="ob-deals">
+          <!-- populated by JS from PRODUCTS_INLINE welfare items -->
+        </div>
+        <div class="ob-deal-note">⚡ 右滑即可加入購物車・僅限今日</div>
+        <button class="ob-start-btn" id="onboarding-start">立即開始探索 →</button>
+      </div>
+
+    </div><!-- /.ob-slides-wrap -->
+
+    <!-- Bottom Navigation -->
+    <div class="ob-nav">
+      <div class="ob-dots" id="ob-dots">
+        <span class="ob-dot active"></span>
+        <span class="ob-dot"></span>
+        <span class="ob-dot"></span>
+      </div>
+      <button class="ob-next-btn" id="ob-next">了解怎麼用 →</button>
+    </div>
+
+  </div><!-- /.ob-container -->
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
