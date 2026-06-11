@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>小物快選 — 產品提案簡報 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ── Design tokens ── */
+:root {
+  --bg:#0B0910; --bg2:#130B22; --bg3:#1C1238;
+  --pink:#FF6B81; --pk2:rgba(255,107,129,.14); --pk3:rgba(255,107,129,.07);
+  --purple:#9B6DFF; --pu2:rgba(155,109,255,.14);
+  --gold:#FFB020; --go2:rgba(255,176,32,.14);
+  --green:#1DC99A; --gr2:rgba(29,201,154,.14);
+  --orange:#FF7440;
+  --t:rgba(255,255,255,1); --t8:rgba(255,255,255,.82);
+  --t5:rgba(255,255,255,.52); --t2:rgba(255,255,255,.2);
+  --t1:rgba(255,255,255,.1); --t05:rgba(255,255,255,.05);
+  --glass:rgba(255,255,255,.055); --gb:rgba(255,255,255,.1);
+  --r:18px; --rs:10px;
+  --f:'微軟正黑體','Microsoft JhengHei','Noto Sans TC','PingFang TC',sans-serif;
+  --fi:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
+  color:var(--t);font-family:var(--f);-webkit-font-smoothing:antialiased;}
+
+/* ── Slide engine ── */
+#deck{position:fixed;inset:0;}
+#slides{position:relative;width:100%;height:100%;}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;display:flex;flex-direction:column;}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* ── Keyframe library ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.91)}to{opacity:1;transform:scale(1)}}
+@keyframes slideL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+@keyframes barGrow{from{height:0;opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes lineDraw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,129,.35)}60%{box-shadow:0 0 0 14px rgba(255,107,129,0)}}
+
+/* .a = animated element; only fires when parent .slide has .active */
+.a{opacity:0;}
+.slide.active .a{animation:fadeUp .65s cubic-bezier(.4,0,.2,1) forwards;}
+.slide.active .a.fi{animation-name:fadeIn;}
+.slide.active .a.sc{animation-name:scaleIn;}
+.slide.active .a.sl{animation-name:slideL;}
+.slide.active .a.sr{animation-name:slideR;}
+.slide.active .a.d1{animation-delay:.08s}
+.slide.active .a.d2{animation-delay:.18s}
+.slide.active .a.d3{animation-delay:.28s}
+.slide.active .a.d4{animation-delay:.38s}
+.slide.active .a.d5{animation-delay:.48s}
+.slide.active .a.d6{animation-delay:.58s}
+.slide.active .a.d7{animation-delay:.68s}
+.slide.active .a.d8{animation-delay:.78s}
+
+/* bar-chart animation */
+.slide.active .bar-fill{animation:barGrow .7s cubic-bezier(.4,0,.2,1) forwards;}
+.slide.active .bar-fill.d3{animation-delay:.38s}
+.slide.active .bar-fill.d4{animation-delay:.46s}
+.slide.active .bar-fill.d5{animation-delay:.54s}
+.slide.active .bar-fill.d6{animation-delay:.62s}
+.slide.active .bar-fill.d7{animation-delay:.70s}
+.slide.active .bar-fill.d8{animation-delay:.78s}
+
+/* ── Shared layout ── */
+.top-bar{height:4px;background:linear-gradient(90deg,var(--pink),var(--purple));flex-shrink:0;}
+.inner{flex:1;display:flex;flex-direction:column;padding:36px 72px 24px;overflow:hidden;min-height:0;}
+.row{flex-direction:row!important;gap:40px;}
+.col{flex:1;display:flex;flex-direction:column;min-width:0;}
+.vdiv{width:1px;background:var(--t1);align-self:stretch;flex-shrink:0;margin:0 4px;}
+
+.lbl{display:inline-flex;align-items:center;gap:10px;margin-bottom:12px;
+  font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--pink);font-family:var(--fi);}
+.lbl::before{content:'';width:20px;height:2px;background:var(--pink);display:block;}
+h2.ttl{font-size:44px;font-weight:900;line-height:1.15;margin-bottom:8px;letter-spacing:-.5px;}
+.sub{font-size:19px;color:var(--t8);margin-bottom:28px;line-height:1.65;font-weight:400;}
+
+.gt{background:linear-gradient(130deg,var(--pink),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gt-g{background:linear-gradient(130deg,var(--gold),#ff9900);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* glass card */
+.gc{background:var(--glass);border:1px solid var(--gb);border-radius:var(--r);
+  overflow:hidden;position:relative;}
+.gc.p{padding:24px 22px 20px;}
+.gc-top{position:absolute;top:0;left:0;right:0;height:3px;}
+
+/* ── Nav + Progress ── */
+#nav{position:fixed;bottom:16px;right:32px;display:flex;align-items:center;gap:14px;z-index:100;}
+#nav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--gb);
+  background:var(--glass);color:var(--t5);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+#nav button:hover{background:var(--pink);border-color:var(--pink);color:#fff;}
+#ctr{font-size:11px;color:var(--t5);font-family:var(--fi);letter-spacing:.5px;}
+#progress{position:fixed;bottom:0;left:0;width:100%;height:3px;background:var(--t05);z-index:100;}
+#prog{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .4s ease;}
+
+/* ════════════════════════════════
+   SLIDE 1 — TITLE
+════════════════════════════════ */
+#s1{background:radial-gradient(ellipse at 35% 55%,#1E1042 0%,#0B0910 65%);}
+#s1 .inner{flex-direction:row;align-items:center;padding:60px 72px;}
+.s1-left{flex:0 0 52%;display:flex;flex-direction:column;}
+.s1-wm{font-size:108px;font-weight:900;color:rgba(255,255,255,.025);
+  font-family:var(--fi);line-height:1;margin-bottom:-68px;user-select:none;letter-spacing:-4px;}
+.s1-bar{width:4px;height:160px;background:linear-gradient(to bottom,var(--pink),var(--purple));
+  border-radius:4px;margin-bottom:24px;}
+.s1-t{font-size:72px;font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:10px;}
+.s1-en{font-size:28px;font-weight:600;color:var(--pink);margin-bottom:16px;font-family:var(--fi);}
+.s1-tag{font-size:18px;color:var(--t8);line-height:1.7;margin-bottom:36px;}
+.s1-meta{font-size:12px;color:var(--t5);letter-spacing:1.5px;font-family:var(--fi);}
+.s1-right{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* product card stack */
+.cstack{position:relative;width:240px;height:340px;animation:float 5s ease-in-out infinite;}
+.cstack .cc{position:absolute;width:228px;height:322px;border-radius:22px;overflow:hidden;}
+.cc.c3{transform:rotate(-5deg) translate(-18px,14px);
+  background:rgba(155,109,255,.12);border:1px solid rgba(155,109,255,.25);}
+.cc.c2{transform:rotate(-2.5deg) translate(-8px,6px);
+  background:rgba(255,107,129,.12);border:1px solid rgba(255,107,129,.25);}
+.cc.c1{transform:rotate(0);background:var(--bg3);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 28px 70px rgba(0,0,0,.75),0 0 0 1px rgba(255,107,129,.12);}
+.c1-img{height:190px;overflow:hidden;position:relative;}
+.c1-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.c1-img::after{content:'';position:absolute;bottom:0;left:0;right:0;height:56px;
+  background:linear-gradient(to top,var(--bg3),transparent);}
+.c1-body{padding:14px 14px 12px;}
+.c1-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;
+  background:var(--go2);color:var(--gold);border:1px solid rgba(255,176,32,.3);
+  padding:3px 10px;border-radius:100px;margin-bottom:8px;}
+.c1-name{font-size:14px;font-weight:700;margin-bottom:5px;}
+.c1-prices{display:flex;align-items:baseline;gap:8px;}
+.c1-price{font-size:18px;font-weight:900;color:var(--pink);font-family:var(--fi);}
+.c1-orig{font-size:11px;color:var(--t5);text-decoration:line-through;font-family:var(--fi);}
+.swipe-hint{display:flex;justify-content:space-between;width:228px;margin-top:18px;
+  font-size:12px;color:var(--t5);padding:0 4px;}
+
+/* ════════════════════════════════
+   SLIDE 2 — PROBLEM
+════════════════════════════════ */
+#s2{background:radial-gradient(ellipse at 80% 20%,#200A10 0%,#0B0910 62%);}
+.stats-row{display:flex;gap:18px;margin-bottom:22px;}
+.stat-box{flex:1;padding:22px 20px 18px;}
+.stat-box .gc-top{background:var(--c);}
+.stat-n{font-size:50px;font-weight:900;line-height:1;font-family:var(--fi);margin-bottom:8px;}
+.stat-lbl{font-size:15px;color:var(--t8);line-height:1.65;}
+.stat-src{font-size:12px;color:var(--t5);margin-top:6px;font-family:var(--fi);}
+
+/* bar chart — fixed-height container so % bar heights work */
+.chart-wrap{display:flex;flex-direction:column;flex:1;min-height:0;}
+.chart-hdr{display:flex;align-items:center;margin-bottom:10px;}
+.chart-title{font-size:14px;color:var(--t5);font-weight:600;letter-spacing:.3px;}
+.cagr-badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;
+  background:var(--gr2);border:1px solid rgba(29,201,154,.3);color:var(--green);
+  font-size:13px;font-weight:700;margin-left:14px;font-family:var(--fi);}
+.chart-area{display:flex;flex-direction:column;flex:1;min-height:0;}
+.bar-vals-row{display:flex;gap:10px;margin-bottom:5px;}
+.bar-vals-row span{flex:1;text-align:center;font-size:13px;font-weight:700;
+  color:var(--pink);font-family:var(--fi);}
+.bar-vals-row .pv{color:var(--green);}
+/* fixed height is the key fix — % heights on bar-fill need a definite parent */
+.bar-chart{display:flex;gap:10px;height:115px;flex-shrink:0;position:relative;}
+.bar-chart::after{content:'';position:absolute;bottom:0;left:0;right:0;
+  height:1px;background:var(--t2);}
+.bar-group{flex:1;height:100%;position:relative;}
+.bar-fill{position:absolute;bottom:0;left:0;right:0;border-radius:5px 5px 0 0;
+  opacity:0;background:linear-gradient(to top,var(--pink),var(--purple));}
+.bar-fill.proj{background:linear-gradient(to top,rgba(29,201,154,.55),rgba(29,201,154,.2));
+  border:1.5px dashed rgba(29,201,154,.45);border-bottom:none;}
+.bar-yrs-row{display:flex;gap:10px;margin-top:7px;}
+.bar-yrs-row span{flex:1;text-align:center;font-size:12px;color:var(--t5);font-family:var(--fi);}
+.bar-yrs-row .py{color:var(--green);}
+.chart-note{font-size:12px;color:var(--t5);margin-top:8px;font-style:italic;}
+
+/* ════════════════════════════════
+   SLIDE 3 — BLIND BOX FAILURES
+════════════════════════════════ */
+#s3{background:radial-gradient(ellipse at 20% 80%,#1A0900 0%,#0B0910 65%);}
+.s3-desc{padding:22px;margin-bottom:0;}
+.s3-desc .gc-top{background:var(--orange);}
+.fail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;}
+.fail-card{padding:20px 18px;}
+.fail-card .gc-top{background:var(--c);}
+.fail-num{font-size:30px;font-weight:900;line-height:1;margin-bottom:8px;font-family:var(--fi);}
+.fail-t{font-size:16px;font-weight:700;margin-bottom:6px;}
+.fail-d{font-size:14px;color:var(--t8);line-height:1.65;}
+
+/* ════════════════════════════════
+   SLIDE 4 — INSIGHT (full-screen)
+════════════════════════════════ */
+#s4{background:radial-gradient(ellipse at 50% 50%,#180D30 0%,#0B0910 70%);}
+.s4-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 110px;text-align:center;}
+.s4-qm{font-size:110px;font-weight:900;color:var(--pink);line-height:.75;margin-bottom:12px;
+  font-family:var(--fi);opacity:.75;}
+.s4-q{font-size:32px;font-weight:700;line-height:1.6;margin-bottom:22px;max-width:820px;}
+.s4-q em{color:var(--pink);font-style:normal;}
+.s4-attr{font-size:15px;color:var(--t5);letter-spacing:1.5px;margin-bottom:36px;}
+.s4-chips{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.chip{padding:8px 20px;border-radius:100px;font-size:14px;font-weight:600;border:1px solid;}
+
+/* ════════════════════════════════
+   SLIDE 5 — SOLUTION
+════════════════════════════════ */
+#s5{background:radial-gradient(ellipse at 70% 30%,#1A0820 0%,#0B0910 65%);}
+.how-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;margin-bottom:10px;}
+.how-item .gc-top{background:var(--pink);}
+.how-n{width:32px;height:32px;border-radius:50%;background:var(--pk2);color:var(--pink);
+  font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:var(--fi);}
+.how-t{font-size:15px;font-weight:700;margin-bottom:4px;}
+.how-d{font-size:14px;color:var(--t8);line-height:1.65;}
+.val-card{flex:1;padding:20px 20px 16px;margin-bottom:10px;}
+.val-who{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:10px;font-family:var(--fi);}
+.val-list{list-style:none;}
+.val-list li{font-size:15px;color:var(--t8);line-height:1.8;padding-left:16px;position:relative;}
+.val-list li::before{content:'→';position:absolute;left:0;color:var(--pink);font-size:11px;top:2px;}
+
+/* ════════════════════════════════
+   SLIDE 6 — SWIPE FEATURE
+════════════════════════════════ */
+#s6{background:radial-gradient(ellipse at 20% 50%,#0A1220 0%,#0B0910 65%);}
+.s6-layout{display:flex;gap:44px;flex:1;align-items:center;}
+.phone{width:188px;height:368px;border-radius:36px;flex-shrink:0;
+  border:5px solid rgba(255,255,255,.16);background:#08060E;position:relative;overflow:hidden;
+  box-shadow:0 36px 72px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.05),
+             0 0 50px rgba(155,109,255,.12);}
+.ph-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:70px;height:18px;background:rgba(255,255,255,.12);border-radius:0 0 14px 14px;z-index:5;}
+.ph-card{position:absolute;top:24px;left:8px;right:8px;bottom:50px;
+  border-radius:18px;overflow:hidden;background:var(--bg3);}
+.ph-img{width:100%;height:63%;overflow:hidden;position:relative;}
+.ph-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.ph-img::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;
+  background:linear-gradient(to top,var(--bg3),transparent);}
+.ph-body{padding:10px;}
+.ph-badge{font-size:9px;font-weight:700;background:var(--pk2);color:var(--pink);
+  border:1px solid rgba(255,107,129,.3);padding:2px 8px;border-radius:100px;
+  display:inline-block;margin-bottom:5px;}
+.ph-name{font-size:12px;font-weight:700;margin-bottom:3px;}
+.ph-price{font-size:14px;font-weight:900;color:var(--pink);font-family:var(--fi);}
+.ph-btns{position:absolute;bottom:0;left:0;right:0;height:46px;
+  display:flex;align-items:center;justify-content:center;gap:28px;
+  background:rgba(255,255,255,.04);border-top:1px solid var(--t1);}
+.ph-btn-x{width:30px;height:30px;border-radius:50%;
+  border:1.5px solid rgba(255,80,80,.4);background:rgba(255,80,80,.1);
+  display:flex;align-items:center;justify-content:center;}
+.ph-btn-h{width:30px;height:30px;border-radius:50%;
+  border:1.5px solid rgba(255,107,129,.4);background:rgba(255,107,129,.12);
+  display:flex;align-items:center;justify-content:center;}
+.ph-x-icon{width:12px;height:12px;position:relative;}
+.ph-x-icon::before,.ph-x-icon::after{content:'';position:absolute;width:100%;height:1.5px;
+  background:rgba(255,80,80,.8);border-radius:1px;top:50%;left:0;transform-origin:center;}
+.ph-x-icon::before{transform:translateY(-50%) rotate(45deg);}
+.ph-x-icon::after{transform:translateY(-50%) rotate(-45deg);}
+.ph-h-icon{width:13px;height:12px;position:relative;}
+.ph-h-icon::before{content:'';position:absolute;width:100%;height:100%;
+  background:var(--pink);clip-path:path("M6.5 11.5L1 6C0 5 0 3.5 1 2.5A2.5 2.5 0 0 1 3.5 2C4.2 2 5 2.4 5.5 3C5.8 3.3 6.2 3.3 6.5 3C7 2.4 7.8 2 8.5 2A2.5 2.5 0 0 1 11 2.5C12 3.5 12 5 11 6L6.5 11.5Z");}
+.s6-feats{flex:1;display:flex;flex-direction:column;gap:14px;}
+.feat{padding:18px 18px 14px;}
+.feat .gc-top{background:var(--c);}
+.feat-t{font-size:15px;font-weight:700;margin-bottom:5px;}
+.feat-d{font-size:14px;color:var(--t8);line-height:1.65;}
+
+/* ════════════════════════════════
+   SLIDE 7 — WELFARE ALGORITHM
+════════════════════════════════ */
+#s7{background:radial-gradient(ellipse at 75% 60%,#1A1100 0%,#0B0910 65%);}
+.s7-layout{display:flex;gap:28px;flex:1;min-height:0;}
+.algo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 42%;align-content:start;}
+.algo-card{padding:18px 16px;}
+.algo-card .gc-top{background:var(--c);}
+.algo-val{font-size:36px;font-weight:900;line-height:1;margin-bottom:4px;font-family:var(--fi);}
+.algo-name{font-size:13.5px;font-weight:700;margin-bottom:3px;}
+.algo-desc{font-size:13px;color:var(--t5);}
+.welfare-list{flex:1;display:flex;flex-direction:column;gap:11px;overflow:hidden;}
+.wcard{display:flex;align-items:center;gap:0;overflow:hidden;}
+.wcard .gc-top{background:var(--gold);}
+.wc-thumb{width:68px;height:68px;flex-shrink:0;overflow:hidden;}
+.wc-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.wc-body{flex:1;padding:10px 14px;}
+.wc-name{font-size:15px;font-weight:700;margin-bottom:4px;}
+.wc-row{display:flex;align-items:center;gap:10px;}
+.wc-price{font-size:17px;font-weight:900;color:var(--pink);font-family:var(--fi);}
+.wc-was{font-size:12px;color:var(--t5);text-decoration:line-through;font-family:var(--fi);}
+.wc-save{font-size:11px;font-weight:700;background:var(--go2);color:var(--gold);
+  padding:3px 10px;border-radius:100px;border:1px solid rgba(255,176,32,.3);white-space:nowrap;}
+.costco{margin-top:12px;padding:12px 16px;border-radius:var(--rs);
+  background:var(--t05);border:1px solid var(--t1);
+  font-size:13px;color:var(--t8);line-height:1.65;font-style:italic;}
+
+/* ════════════════════════════════
+   SLIDE 8 — LABELS & ORDERS
+════════════════════════════════ */
+#s8{background:radial-gradient(ellipse at 30% 70%,#0A1810 0%,#0B0910 65%);}
+.cond-row{display:flex;align-items:stretch;gap:0;margin-bottom:10px;overflow:hidden;}
+.cond-row .gc-top{background:var(--c);}
+.cond-swatch{width:5px;flex-shrink:0;background:var(--c);}
+.cond-tag-box{display:flex;align-items:center;justify-content:center;
+  width:78px;flex-shrink:0;background:var(--cb);padding:8px;}
+.cond-tag-txt{font-size:14px;font-weight:900;color:var(--c);}
+.cond-body{flex:1;padding:12px 16px;display:flex;flex-direction:column;justify-content:center;}
+.cond-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.cond-desc{font-size:14px;color:var(--t8);line-height:1.65;}
+.tl{display:flex;flex-direction:column;flex:1;}
+.tl-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:11px;top:26px;bottom:-16px;
+  width:2px;background:var(--t1);}
+.tl-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:2px solid;
+  display:flex;align-items:center;justify-content:center;}
+.done .tl-dot{background:var(--pink);border-color:var(--pink);}
+.done .tl-dot::after{content:'';display:block;width:8px;height:6px;
+  border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);}
+.pend .tl-dot{background:transparent;border-color:var(--t2);}
+.tl-lbl{font-size:15px;font-weight:700;margin-bottom:2px;}
+.tl-desc{font-size:13px;color:var(--t5);}
+.done .tl-lbl{color:var(--t);}
+.pend .tl-lbl{color:var(--t5);}
+
+/* ════════════════════════════════
+   SLIDE 9 — WIN-WIN
+════════════════════════════════ */
+#s9{background:radial-gradient(ellipse at 50% 50%,#0A1416 0%,#0B0910 65%);}
+.s9-col{flex:1;padding:26px 22px 20px;display:flex;flex-direction:column;}
+.s9-who{font-size:20px;font-weight:900;margin-bottom:4px;}
+.s9-sub{font-size:13px;color:var(--t5);margin-bottom:18px;font-family:var(--fi);}
+.s9-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.s9-dot{width:7px;height:7px;border-radius:50%;margin-top:7px;flex-shrink:0;background:var(--c);}
+.s9-it{font-size:15px;font-weight:700;margin-bottom:2px;}
+.s9-id{font-size:14px;color:var(--t8);line-height:1.65;}
+
+/* ════════════════════════════════
+   SLIDE 10 — PERSONAS
+════════════════════════════════ */
+#s10{background:radial-gradient(ellipse at 50% 0%,#140A22 0%,#0B0910 60%);}
+.personas{display:flex;gap:18px;flex:1;}
+.persona{flex:1;padding:24px 20px;display:flex;flex-direction:column;overflow:hidden;}
+.p-letter{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;font-weight:900;font-family:var(--fi);
+  margin-bottom:14px;flex-shrink:0;color:#fff;background:var(--pc);}
+.p-role{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--pc);margin-bottom:5px;font-family:var(--fi);}
+.p-name{font-size:17px;font-weight:700;margin-bottom:3px;}
+.p-age{font-size:12px;color:var(--t5);margin-bottom:12px;font-family:var(--fi);}
+.p-desc{font-size:14px;color:var(--t8);line-height:1.7;flex:1;margin-bottom:12px;}
+.p-pain{padding:11px 13px;border-radius:var(--rs);background:rgba(255,116,64,.08);
+  border:1px solid rgba(255,116,64,.2);}
+.p-pain-l{font-size:10px;font-weight:700;color:var(--orange);letter-spacing:1px;
+  text-transform:uppercase;display:block;margin-bottom:3px;font-family:var(--fi);}
+.p-pain-t{font-size:12.5px;color:rgba(255,116,64,.85);line-height:1.5;}
+
+/* ════════════════════════════════
+   SLIDE 11 — ROADMAP
+════════════════════════════════ */
+#s11{background:radial-gradient(ellipse at 60% 80%,#0A1020 0%,#0B0910 65%);}
+.roadmap{display:flex;flex:1;gap:0;min-height:0;}
+.phase{flex:1;padding:24px 22px;display:flex;flex-direction:column;position:relative;}
+.phase:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;
+  transform:translateY(-50%);width:1px;height:60%;background:var(--t1);}
+.ph-line{height:3px;border-radius:2px;background:var(--phc);margin-bottom:18px;}
+.ph-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--phc);margin-bottom:10px;font-family:var(--fi);}
+.ph-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+.ph-when{font-size:12px;color:var(--t5);margin-bottom:18px;font-family:var(--fi);}
+.ph-items{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.ph-items li{font-size:15px;color:var(--t8);line-height:1.7;padding-left:14px;position:relative;}
+.ph-items li::before{content:'·';position:absolute;left:4px;color:var(--phc);font-size:16px;line-height:1.2;}
+
+/* ════════════════════════════════
+   SLIDE 12 — QR CODE
+════════════════════════════════ */
+#s12{background:radial-gradient(ellipse at 50% 40%,#1A0828 0%,#0B0910 65%);}
+.s12-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 80px 30px;text-align:center;}
+.s12-eye{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--pink);margin-bottom:12px;font-family:var(--fi);}
+.s12-title{font-size:50px;font-weight:900;margin-bottom:8px;letter-spacing:-.5px;line-height:1.15;}
+.s12-sub{font-size:17px;color:var(--t8);margin-bottom:36px;}
+.qr-wrap{padding:18px;background:#fff;border-radius:18px;
+  box-shadow:0 0 0 4px rgba(255,107,129,.25),0 0 50px rgba(155,109,255,.2);
+  animation:pulse 3.5s ease-in-out infinite;margin-bottom:16px;}
+.qr-wrap img{display:block;width:210px;height:210px;}
+.s12-url{font-size:14px;color:var(--pink);font-family:var(--fi);letter-spacing:.3px;margin-bottom:28px;}
+.s12-footer{font-size:12px;color:var(--t5);letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div id="deck">
+<div id="progress"><div id="prog"></div></div>
+<div id="slides">
+
+<!-- ══════════ SLIDE 1 ══════════ -->
+<section class="slide" id="s1">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="s1-left">
+    <div class="s1-wm a fi d1">SHOP SWIPE</div>
+    <div class="s1-bar a d2"></div>
+    <h1 class="s1-t a d3">小物快選</h1>
+    <div class="s1-en a d4">Shop Swipe</div>
+    <p class="s1-tag a d5">讓閒逛變購物，讓庫存化為商機</p>
+    <div class="s1-meta a d6">內部提案簡報 &nbsp;·&nbsp; 2026</div>
+  </div>
+  <div class="s1-right">
+    <div class="cstack a sc d3">
+      <div class="cc c3"></div>
+      <div class="cc c2"></div>
+      <div class="cc c1">
+        <div class="c1-img">
+          <img src="images/product-41.jpg" alt="AirPods Pro 2">
+        </div>
+        <div class="c1-body">
+          <div class="c1-badge">福利品</div>
+          <div class="c1-name">Apple AirPods Pro 2</div>
+          <div class="c1-prices">
+            <span class="c1-price">NT$ 2,290</span>
+            <span class="c1-orig">NT$ 7,490</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="swipe-hint a d6">
+      <span>← 跳過</span><span>喜歡 →</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 2 ══════════ -->
+<section class="slide" id="s2">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">01 &nbsp;/&nbsp; 問題背景</div>
+  <h2 class="ttl a d2">商家的庫存困境</h2>
+  <p class="sub a d3">全球零售業庫存錯配問題持續惡化，亞太地區首當其衝</p>
+
+  <div class="stats-row a d3">
+    <div class="gc stat-box" style="--c:var(--pink);">
+      <div class="gc-top"></div>
+      <div class="stat-n gt" data-target="562">0</div>
+      <div style="font-size:13px;color:var(--t5);margin-top:-6px;margin-bottom:6px;font-family:var(--fi);">億美元 / 年</div>
+      <div class="stat-lbl">全球零售業每年因<strong>庫存積壓</strong>造成的損失</div>
+      <div class="stat-src">資料來源：IHL Group，2023</div>
+    </div>
+    <div class="gc stat-box" style="--c:var(--gold);">
+      <div class="gc-top" style="background:var(--gold);"></div>
+      <div class="stat-n gt-g" data-target="177">0</div>
+      <div style="font-size:13px;color:var(--t5);margin-top:-6px;margin-bottom:6px;font-family:var(--fi);">兆美元 / 年</div>
+      <div class="stat-lbl">庫存錯配（缺貨 + 積壓）造成的<strong>全球總損失</strong></div>
+      <div class="stat-src">資料來源：IHL Group，2023</div>
+    </div>
+    <div class="gc stat-box" style="--c:var(--green);">
+      <div class="gc-top" style="background:var(--green);"></div>
+      <div class="stat-n" style="background:linear-gradient(130deg,var(--green),#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" data-target="14">0</div>
+      <div style="font-size:13px;color:var(--t5);margin-top:-6px;margin-bottom:6px;font-family:var(--fi);">% CAGR</div>
+      <div class="stat-lbl">亞太地區二手 / 庫存電商市場<strong>年複合成長率</strong></div>
+      <div class="stat-src">資料來源：ResearchAndMarkets，2025</div>
+    </div>
+  </div>
+
+  <!-- Bar chart: APAC recommerce market (source: ResearchAndMarkets 2025) -->
+  <div class="chart-wrap a d4">
+    <div class="chart-hdr">
+      <div class="chart-title">亞太地區二手・庫存商品電商市場規模（十億美元）</div>
+      <span class="cagr-badge">↑ 14.1% CAGR</span>
+    </div>
+    <div class="chart-area">
+      <div class="bar-vals-row">
+        <span>$41B</span><span>$47B</span><span>$53B</span>
+        <span>$61B</span><span>$69B</span><span class="pv">$78B</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-group"><div class="bar-fill d3" style="height:55%;"></div></div>
+        <div class="bar-group"><div class="bar-fill d4" style="height:63%;"></div></div>
+        <div class="bar-group"><div class="bar-fill d5" style="height:71%;"></div></div>
+        <div class="bar-group"><div class="bar-fill d6" style="height:82%;"></div></div>
+        <div class="bar-group"><div class="bar-fill d7" style="height:92%;"></div></div>
+        <div class="bar-group"><div class="bar-fill proj d8" style="height:100%;"></div></div>
+      </div>
+      <div class="bar-yrs-row">
+        <span>2020</span><span>2021</span><span>2022</span>
+        <span>2023</span><span>2024</span><span class="py">2025E</span>
+      </div>
+    </div>
+    <div class="chart-note">
+      資料來源：ResearchAndMarkets, <em>Asia-Pacific Recommerce Market Report 2025</em> &nbsp;·&nbsp;
+      IHL Group, <em>Retail Inventory Distortion Report 2023</em>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 3 ══════════ -->
+<section class="slide" id="s3">
+<div class="top-bar"></div>
+<div class="inner row" style="padding-bottom:30px;">
+  <div class="col" style="flex:0 0 40%;">
+    <div class="lbl a d1">02 &nbsp;/&nbsp; 現有解方</div>
+    <h2 class="ttl a d2" style="font-size:38px;line-height:1.2;">稱重盲盒<br>的困境</h2>
+    <p class="sub a d3" style="font-size:15px;margin-bottom:20px;">目前最流行的庫存清倉方式，<br>卻衍生了新的問題</p>
+    <div class="gc s3-desc p a d4">
+      <div class="gc-top" style="background:var(--orange);"></div>
+      <div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:10px;">什麼是稱重盲盒？</div>
+      <div style="font-size:13px;color:var(--t8);line-height:1.75;">
+        將退貨與庫存商品按<strong style="color:var(--t);">重量</strong>出售，消費者不知道裡面裝什麼。通常透過直播或電商平台販售，以「隨機驚喜」為號召。
+      </div>
+    </div>
+  </div>
+  <div class="col" style="padding-top:80px;">
+    <div class="fail-grid">
+      <div class="gc fail-card a d4" style="--c:var(--pink);">
+        <div class="gc-top"></div>
+        <div class="fail-num gt">01</div>
+        <div class="fail-t">商品價值被嚴重低估</div>
+        <div class="fail-d">好貨與劣品以同等重量計價，商家的優質商品嚴重賤賣。</div>
+      </div>
+      <div class="gc fail-card a d5" style="--c:var(--purple);">
+        <div class="gc-top" style="background:var(--purple);"></div>
+        <div class="fail-num" style="background:linear-gradient(130deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">02</div>
+        <div class="fail-t">消費體驗極差</div>
+        <div class="fail-d">不透明的購買讓消費者焦慮，收到不需要的商品後退貨糾紛頻繁。</div>
+      </div>
+      <div class="gc fail-card a d6" style="--c:var(--orange);">
+        <div class="gc-top" style="background:var(--orange);"></div>
+        <div class="fail-num" style="background:linear-gradient(130deg,var(--orange),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">03</div>
+        <div class="fail-t">品牌形象受損</div>
+        <div class="fail-d">品牌商品混入盲盒低價流通，嚴重破壞品牌定位。</div>
+      </div>
+      <div class="gc fail-card a d7" style="--c:var(--green);">
+        <div class="gc-top" style="background:var(--green);"></div>
+        <div class="fail-num" style="background:linear-gradient(130deg,var(--green),#06d6a0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">04</div>
+        <div class="fail-t">需求無法精準匹配</div>
+        <div class="fail-d">商品與需求的嚴重錯配讓買賣雙方同時受損。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 4 ══════════ -->
+<section class="slide" id="s4">
+<div class="top-bar"></div>
+<div class="s4-body">
+  <div class="s4-qm a fi d1">"</div>
+  <p class="s4-q a d2">
+    台灣人不是為了「<em>買東西</em>」而逛夜市，<br>
+    而是為了「<em>驚喜與發現</em>」而逛。
+  </p>
+  <div class="s4-attr a d3">— 小物快選核心產品洞察</div>
+  <div class="s4-chips a d4">
+    <div class="chip" style="background:var(--pk2);color:var(--pink);border-color:rgba(255,107,129,.3);">打發時間的瀏覽行為尚未被電商善用</div>
+    <div class="chip" style="background:var(--pu2);color:var(--purple);border-color:rgba(155,109,255,.3);">滑動是最自然的快速決策操作</div>
+    <div class="chip" style="background:var(--gr2);color:var(--green);border-color:rgba(29,201,154,.3);">一件划算好物足以建立用戶黏著度</div>
+  </div>
+  <p class="a d5" style="font-size:15px;color:var(--t5);max-width:620px;text-align:center;line-height:1.75;margin-top:28px;">
+    Tinder、抖音、Instagram Reels 已訓練數十億用戶：<strong style="color:var(--t8);">滑動 = 快速決策</strong>。<br>我們把這個已被驗證的行為模式，帶進購物場景。
+  </p>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 5 ══════════ -->
+<section class="slide" id="s5">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">03 &nbsp;/&nbsp; 解決方案</div>
+  <h2 class="ttl a d2">介紹：小物快選</h2>
+  <p class="sub a d3" style="margin-bottom:20px;">Tinder 式滑動選物 &nbsp;×&nbsp; 庫存商品透明化 &nbsp;×&nbsp; 福利商品鉤子</p>
+  <div style="display:flex;gap:20px;flex:1;min-height:0;">
+    <div class="col">
+      <div style="font-size:12px;color:var(--t5);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-family:var(--fi);">使用流程</div>
+      <div class="gc how-item a d4"><div class="how-n">1</div><div><div class="how-t">打開 App，開始滑動</div><div class="how-d">無需搜尋目標，直接看到商品卡片，隨時開始探索。</div></div></div>
+      <div class="gc how-item a d5" style="margin-top:10px;"><div class="how-n">2</div><div><div class="how-t">右滑喜歡・左滑跳過</div><div class="how-d">直覺操作，一秒決定。搭配動畫回饋讓選物過程充滿樂趣。</div></div></div>
+      <div class="gc how-item a d6" style="margin-top:10px;"><div class="how-n">3</div><div><div class="how-t">點擊查看完整商品詳情</div><div class="how-d">規格、狀態標籤、原價 vs 現價，確認後直接加入購物車。</div></div></div>
+      <div class="gc how-item a d7" style="margin-top:10px;"><div class="how-n">4</div><div><div class="how-t">結帳 → 即時訂單追蹤</div><div class="how-d">從下單到送達，五階段時間軸清楚呈現，安心等待。</div></div></div>
+    </div>
+    <div class="col">
+      <div class="gc val-card a d4" style="--c:var(--green);">
+        <div class="gc-top" style="background:var(--green);"></div>
+        <div class="val-who" style="color:var(--green);">對商家</div>
+        <ul class="val-list">
+          <li>庫存商品精準觸及有需求的消費者</li>
+          <li>每件商品依真實狀態定價，不再秤重虧損</li>
+          <li>快速回款，縮短庫存週轉週期</li>
+          <li>透明狀態標籤維護品牌形象</li>
+        </ul>
+      </div>
+      <div class="gc val-card a d5">
+        <div class="gc-top"></div>
+        <div class="val-who" style="color:var(--pink);">對消費者</div>
+        <ul class="val-list">
+          <li>所有商品保證低於市價，隨時撿到寶</li>
+          <li>如夜市閒逛，驚喜感驅動回訪</li>
+          <li>清楚的商品狀態讓購買更有信心</li>
+          <li>旗艦科技以成本價出現，真實省錢</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 6 ══════════ -->
+<section class="slide" id="s6">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">04 &nbsp;/&nbsp; 核心功能一</div>
+  <h2 class="ttl a d2">Tinder 式滑動購物體驗</h2>
+  <p class="sub a d3" style="margin-bottom:16px;">快速瀏覽 · 直覺決策 · 上癮式設計</p>
+  <div class="s6-layout">
+    <div class="a sc d3" style="display:flex;flex-direction:column;align-items:center;gap:14px;flex-shrink:0;">
+      <div class="phone">
+        <div class="ph-notch"></div>
+        <div class="ph-card">
+          <div class="ph-img">
+            <img src="images/product-44.jpg" alt="Apple Watch">
+          </div>
+          <div class="ph-body">
+            <div class="ph-badge">庫存品</div>
+            <div class="ph-name">Apple Watch S9</div>
+            <div class="ph-price">NT$ 7,900</div>
+          </div>
+        </div>
+        <div class="ph-btns">
+          <div class="ph-btn-x"><div class="ph-x-icon"></div></div>
+          <div class="ph-btn-h"><div class="ph-h-icon"></div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;font-size:11px;color:var(--t5);">
+        <span>← 跳過</span><span>喜歡 →</span>
+      </div>
+    </div>
+    <div class="s6-feats">
+      <div class="gc feat a d4" style="--c:var(--pink);"><div class="gc-top"></div>
+        <div class="feat-t">向右滑 — 加入購物車</div>
+        <div class="feat-d">直覺操作，一秒決定喜不喜歡。搭配心形動畫回饋，選物充滿成就感，推動衝動購買。</div>
+      </div>
+      <div class="gc feat a d5" style="--c:var(--purple);"><div class="gc-top" style="background:var(--purple);"></div>
+        <div class="feat-t">點擊卡片 — 查看商品詳情</div>
+        <div class="feat-d">完整規格、狀態標籤、原價 vs 現價全部清楚呈現，確認後可直接加入購物車。</div>
+      </div>
+      <div class="gc feat a d6" style="--c:var(--gold);"><div class="gc-top" style="background:var(--gold);"></div>
+        <div class="feat-t">福利商品 — 穿插出現，製造驚喜</div>
+        <div class="feat-d">演算法在一般商品之間插入旗艦科技低價品，讓每次滑動都充滿期待感與探索樂趣。</div>
+      </div>
+      <div class="gc feat a d7" style="--c:var(--green);"><div class="gc-top" style="background:var(--green);"></div>
+        <div class="feat-t">桌面版鍵盤快捷鍵支援</div>
+        <div class="feat-d">← → 快速滑動 · I 查看詳情 · Esc 關閉。電腦操作同樣流暢，一鍵決策。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 7 ══════════ -->
+<section class="slide" id="s7">
+<div class="top-bar" style="background:linear-gradient(90deg,var(--gold),var(--orange));"></div>
+<div class="inner">
+  <div class="lbl a d1" style="color:var(--gold);">05 &nbsp;/&nbsp; 核心功能二</div>
+  <h2 class="ttl a d2">福利商品演算法</h2>
+  <p class="sub a d3" style="margin-bottom:18px;">策略性插入旗艦商品，讓用戶真的「挖到寶」</p>
+  <div class="s7-layout">
+    <div class="algo-grid a d4">
+      <div class="gc algo-card" style="--c:var(--gold);"><div class="gc-top"></div>
+        <div class="algo-val" style="color:var(--gold);">7</div>
+        <div class="algo-name">最小間隔</div>
+        <div class="algo-desc">張一般商品後才可觸發</div>
+      </div>
+      <div class="gc algo-card" style="--c:var(--orange);"><div class="gc-top" style="background:var(--orange);"></div>
+        <div class="algo-val" style="color:var(--orange);">16</div>
+        <div class="algo-name">最大間隔</div>
+        <div class="algo-desc">張後強制插入一件</div>
+      </div>
+      <div class="gc algo-card" style="--c:var(--pink);"><div class="gc-top" style="background:var(--pink);"></div>
+        <div class="algo-val gt">11%</div>
+        <div class="algo-name">觸發機率</div>
+        <div class="algo-desc">間隔期間隨機觸發</div>
+      </div>
+      <div class="gc algo-card" style="--c:var(--purple);"><div class="gc-top" style="background:var(--purple);"></div>
+        <div class="algo-val" style="color:var(--purple);">3</div>
+        <div class="algo-name">每次上限</div>
+        <div class="algo-desc">件福利商品 / 每次使用</div>
+      </div>
+      <div class="costco a d5" style="grid-column:span 2;">
+        類比：Costco 的烤雞策略 — 用成本價品項建立用戶黏著度，讓人不斷回訪
+      </div>
+    </div>
+    <div class="welfare-list a d4">
+      <div class="gc wcard">
+        <div class="gc-top" style="background:var(--gold);"></div>
+        <div class="wc-thumb"><img src="images/product-41.jpg" alt="AirPods Pro 2"></div>
+        <div class="wc-body">
+          <div class="wc-name">Apple AirPods Pro 2</div>
+          <div class="wc-row">
+            <div class="wc-price">NT$ 2,290</div>
+            <div class="wc-was">NT$ 7,490</div>
+            <div class="wc-save">省 NT$ 5,200</div>
+          </div>
+        </div>
+      </div>
+      <div class="gc wcard">
+        <div class="gc-top" style="background:var(--gold);"></div>
+        <div class="wc-thumb"><img src="images/product-42.jpg" alt="iPhone 15"></div>
+        <div class="wc-body">
+          <div class="wc-name">iPhone 15 128GB</div>
+          <div class="wc-row">
+            <div class="wc-price">NT$ 12,900</div>
+            <div class="wc-was">NT$ 28,900</div>
+            <div class="wc-save">省 NT$ 16,000</div>
+          </div>
+        </div>
+      </div>
+      <div class="gc wcard">
+        <div class="gc-top" style="background:var(--gold);"></div>
+        <div class="wc-thumb"><img src="images/product-45.jpg" alt="Nintendo Switch"></div>
+        <div class="wc-body">
+          <div class="wc-name">Nintendo Switch OLED</div>
+          <div class="wc-row">
+            <div class="wc-price">NT$ 6,990</div>
+            <div class="wc-was">NT$ 10,800</div>
+            <div class="wc-save">省 NT$ 3,810</div>
+          </div>
+        </div>
+      </div>
+      <div class="gc wcard">
+        <div class="gc-top" style="background:var(--gold);"></div>
+        <div class="wc-thumb"><img src="images/product-43.jpg" alt="Sony WH-1000XM5"></div>
+        <div class="wc-body">
+          <div class="wc-name">Sony WH-1000XM5</div>
+          <div class="wc-row">
+            <div class="wc-price">NT$ 5,990</div>
+            <div class="wc-was">NT$ 12,900</div>
+            <div class="wc-save">省 NT$ 6,910</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 8 ══════════ -->
+<section class="slide" id="s8">
+<div class="top-bar"></div>
+<div class="inner row" style="gap:32px;padding-bottom:28px;">
+  <div class="col">
+    <div class="lbl a d1">06 &nbsp;/&nbsp; 核心功能三</div>
+    <h2 class="ttl a d2" style="font-size:38px;">商品透明化</h2>
+    <p class="sub a d3" style="font-size:15px;margin-bottom:16px;">四種狀態標籤讓每筆交易清楚明白</p>
+    <div class="gc cond-row a d4" style="--c:var(--green);--cb:var(--gr2);">
+      <div class="cond-swatch"></div>
+      <div class="cond-tag-box"><div class="cond-tag-txt">全新</div></div>
+      <div class="cond-body"><div class="cond-title" style="color:var(--green);">未使用 · 原廠包裝完整</div><div class="cond-desc">品質保證最高，適合對品質有要求的買家。</div></div>
+    </div>
+    <div class="gc cond-row a d5" style="--c:var(--purple);--cb:var(--pu2);">
+      <div class="cond-swatch" style="background:var(--purple);"></div>
+      <div class="cond-tag-box" style="background:var(--pu2);"><div class="cond-tag-txt" style="color:var(--purple);">庫存品</div></div>
+      <div class="cond-body"><div class="cond-title" style="color:var(--purple);">未使用 · 可能無原廠包裝</div><div class="cond-desc">功能完整，適合在意品質但接受無盒的買家。</div></div>
+    </div>
+    <div class="gc cond-row a d6" style="--c:#AA66FF;--cb:rgba(170,102,255,.12);">
+      <div class="cond-swatch" style="background:#AA66FF;"></div>
+      <div class="cond-tag-box" style="background:rgba(170,102,255,.12);"><div class="cond-tag-txt" style="color:#AA66FF;">展示品</div></div>
+      <div class="cond-body"><div class="cond-title" style="color:#AA66FF;">曾展示或試用 · 功能正常</div><div class="cond-desc">有機會以更低價格入手功能完整的商品。</div></div>
+    </div>
+    <div class="gc cond-row a d7" style="--c:var(--gold);--cb:var(--go2);">
+      <div class="cond-swatch" style="background:var(--gold);"></div>
+      <div class="cond-tag-box" style="background:var(--go2);"><div class="cond-tag-txt" style="color:var(--gold);">福利品</div></div>
+      <div class="cond-body"><div class="cond-title" style="color:var(--gold);">輕微外觀瑕疵 · 功能正常</div><div class="cond-desc">價格最低，CP 值最高，是挖寶族的首選。</div></div>
+    </div>
+  </div>
+  <div class="vdiv a fi d3"></div>
+  <div class="col">
+    <div class="lbl a d1" style="margin-top:0;">訂單追蹤時間軸</div>
+    <p class="a d3" style="font-size:14px;color:var(--t5);margin-bottom:20px;">從下單到送達，五階段即時呈現</p>
+    <div class="tl a d3">
+      <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-lbl">訂單確認</div><div class="tl-desc">已收到您的訂單，正在處理中</div></div></div>
+      <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-lbl">準備中</div><div class="tl-desc">正在為您備貨 · 約 2–15 分鐘</div></div></div>
+      <div class="tl-item done"><div class="tl-dot"></div><div><div class="tl-lbl">已出貨</div><div class="tl-desc">商品已交付物流 · 約 15–45 分鐘</div></div></div>
+      <div class="tl-item pend"><div class="tl-dot"></div><div><div class="tl-lbl">配送中</div><div class="tl-desc">配送員正在途中 · 約 45–120 分鐘</div></div></div>
+      <div class="tl-item pend"><div class="tl-dot"></div><div><div class="tl-lbl">已送達</div><div class="tl-desc">商品已送達，感謝您的購買</div></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 9 ══════════ -->
+<section class="slide" id="s9">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">07 &nbsp;/&nbsp; 商業價值</div>
+  <h2 class="ttl a d2">雙贏局面</h2>
+  <p class="sub a d3" style="margin-bottom:24px;">商家清庫存，消費者撿到寶 — 兩端都獲得真實價值</p>
+  <div style="display:flex;gap:20px;flex:1;min-height:0;">
+    <div class="gc s9-col a d4" style="--c:var(--green);">
+      <div class="gc-top" style="background:var(--green);"></div>
+      <div class="s9-who" style="color:var(--green);">商家端</div>
+      <div class="s9-sub">庫存管理 · 品牌維護 · 現金流</div>
+      <div class="s9-item" style="--c:var(--green);"><div class="s9-dot"></div><div><div class="s9-it">庫存有效清空</div><div class="s9-id">滯銷品與退貨品獲得真實曝光機會，不再佔用倉庫與資金。</div></div></div>
+      <div class="s9-item" style="--c:var(--green);"><div class="s9-dot"></div><div><div class="s9-it">公平定價，不再秤重虧損</div><div class="s9-id">每件商品按實際狀態出售，最大化回收價值。</div></div></div>
+      <div class="s9-item" style="--c:var(--green);"><div class="s9-dot"></div><div><div class="s9-it">精準觸及有需求的買家</div><div class="s9-id">滑動機制自然篩選出有興趣的消費者，轉換率更高。</div></div></div>
+      <div class="s9-item" style="--c:var(--green);"><div class="s9-dot"></div><div><div class="s9-it">品牌形象受到保護</div><div class="s9-id">透明標籤讓消費者理解商品背景，減少誤解與糾紛。</div></div></div>
+      <div class="s9-item" style="--c:var(--green);"><div class="s9-dot"></div><div><div class="s9-it">加速資金回轉</div><div class="s9-id">縮短庫存週轉週期，騰出空間進新貨。</div></div></div>
+    </div>
+    <div class="gc s9-col a d5">
+      <div class="gc-top"></div>
+      <div class="s9-who" style="color:var(--pink);">消費者端</div>
+      <div class="s9-sub">低價好物 · 驚喜體驗 · 購物樂趣</div>
+      <div class="s9-item" style="--c:var(--pink);"><div class="s9-dot"></div><div><div class="s9-it">所有商品保證低於市價</div><div class="s9-id">每件商品都是真實低價，不是製造出來的優惠假象。</div></div></div>
+      <div class="s9-item" style="--c:var(--pink);"><div class="s9-dot"></div><div><div class="s9-it">如夜市閒逛的驚喜感</div><div class="s9-id">隨手滑就可能發現驚喜好物，低壓力高樂趣。</div></div></div>
+      <div class="s9-item" style="--c:var(--pink);"><div class="s9-dot"></div><div><div class="s9-it">商品資訊透明有信心</div><div class="s9-id">狀態標籤清楚告知背景，購買決策有依據。</div></div></div>
+      <div class="s9-item" style="--c:var(--pink);"><div class="s9-dot"></div><div><div class="s9-it">福利商品讓人真的省錢</div><div class="s9-id">旗艦科技以成本價出現，有機會以市價 30–50% 購入正品。</div></div></div>
+      <div class="s9-item" style="--c:var(--pink);"><div class="s9-dot"></div><div><div class="s9-it">快速、輕鬆的購物流程</div><div class="s9-id">從滑動選物到訂單追蹤，5 分鐘完成完整購物。</div></div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 10 ══════════ -->
+<section class="slide" id="s10">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">08 &nbsp;/&nbsp; 目標客群</div>
+  <h2 class="ttl a d2">為誰而建？</h2>
+  <p class="sub a d3" style="margin-bottom:24px;">三個核心使用族群，各有不同痛點與需求</p>
+  <div class="personas">
+    <div class="gc persona a d4" style="--pc:var(--pink);">
+      <div class="gc-top"></div>
+      <div class="p-letter" style="background:var(--pk2);">A</div>
+      <div class="p-role">主力消費族群</div>
+      <div class="p-name">悠閒滑手機的小資族</div>
+      <div class="p-age">25–38 歲 · 上班族</div>
+      <div class="p-desc">下班後習慣滑手機放鬆，對精品沒需求，但樂於以低價撿好物。時間充裕但預算有限，喜歡「撿到寶」的成就感。</div>
+      <div class="p-pain"><span class="p-pain-l">核心痛點</span><div class="p-pain-t">傳統電商要搜尋、比價、讀評論，實在太費力了</div></div>
+    </div>
+    <div class="gc persona a d5" style="--pc:var(--purple);">
+      <div class="gc-top" style="background:var(--purple);"></div>
+      <div class="p-letter" style="background:var(--pu2);color:var(--purple);">B</div>
+      <div class="p-role" style="color:var(--purple);">衝動購買族群</div>
+      <div class="p-name">夜市型隨機消費者</div>
+      <div class="p-age">20–45 歲 · 各行各業</div>
+      <div class="p-desc">不確定自己要買什麼，但看到划算的就想要。驚喜感驅動購買決策，享受探索與發現的樂趣與滿足。</div>
+      <div class="p-pain"><span class="p-pain-l">核心痛點</span><div class="p-pain-t">沒有平台能給予「隨機驚喜好物」的沉浸體驗</div></div>
+    </div>
+    <div class="gc persona a d6" style="--pc:var(--green);">
+      <div class="gc-top" style="background:var(--green);"></div>
+      <div class="p-letter" style="background:var(--gr2);color:var(--green);">C</div>
+      <div class="p-role" style="color:var(--green);">B2B 合作夥伴</div>
+      <div class="p-name">庫存積壓的商家</div>
+      <div class="p-age">中小型零售商 · 品牌方</div>
+      <div class="p-desc">手上有大量過季品、退貨品、展示機，急需清倉但不願損傷品牌形象，希望商品精準觸及有需求的買家。</div>
+      <div class="p-pain"><span class="p-pain-l">核心痛點</span><div class="p-pain-t">稱重盲盒虧損大，正規電商清倉週期長效率低</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 11 ══════════ -->
+<section class="slide" id="s11">
+<div class="top-bar"></div>
+<div class="inner">
+  <div class="lbl a d1">09 &nbsp;/&nbsp; 未來規劃</div>
+  <h2 class="ttl a d2">從 MVP 到完整平台</h2>
+  <p class="sub a d3" style="margin-bottom:22px;">三個階段，逐步建立商品媒合生態系</p>
+  <div class="roadmap">
+    <div class="gc phase a d4" style="--phc:var(--pink);">
+      <div class="gc-top"></div>
+      <div class="ph-line"></div>
+      <div class="ph-badge">Phase 1 · 現在</div>
+      <div class="ph-title">MVP 產品</div>
+      <div class="ph-when">已完成</div>
+      <ul class="ph-items">
+        <li>Tinder 式滑動選物機制</li>
+        <li>福利商品演算法</li>
+        <li>商品狀態標籤系統</li>
+        <li>購物車 + 訂單追蹤</li>
+        <li>取消訂單流程</li>
+        <li>會員登入 / 個人資料</li>
+      </ul>
+    </div>
+    <div class="gc phase a d5" style="--phc:var(--purple);">
+      <div class="gc-top" style="background:var(--purple);"></div>
+      <div class="ph-line" style="background:var(--purple);"></div>
+      <div class="ph-badge" style="color:var(--purple);">Phase 2 · 近期</div>
+      <div class="ph-title">功能擴充</div>
+      <div class="ph-when">Q3–Q4 2026</div>
+      <ul class="ph-items">
+        <li>搜尋與分類篩選</li>
+        <li>個人化推薦演算法</li>
+        <li>商家後台管理系統</li>
+        <li>用戶評價 / 回饋機制</li>
+        <li>推播通知（福利品上架）</li>
+        <li>商品收藏清單</li>
+      </ul>
+    </div>
+    <div class="gc phase a d6" style="--phc:var(--green);">
+      <div class="gc-top" style="background:var(--green);"></div>
+      <div class="ph-line" style="background:var(--green);"></div>
+      <div class="ph-badge" style="color:var(--green);">Phase 3 · 長期</div>
+      <div class="ph-title">完整平台</div>
+      <div class="ph-when">2027+</div>
+      <ul class="ph-items">
+        <li>多商家開放入駐</li>
+        <li>AI 驅動商品配對</li>
+        <li>B2B 庫存媒合系統</li>
+        <li>實體 / 線上融合體驗</li>
+        <li>品牌授權福利品直播</li>
+        <li>數據分析儀表板</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════ SLIDE 12 ══════════ -->
+<section class="slide" id="s12">
+<div class="top-bar"></div>
+<div class="s12-body">
+  <div class="s12-eye a d1">立即體驗</div>
+  <h2 class="s12-title a d2">掃碼，親身感受<br><span class="gt">Tinder 式購物</span></h2>
+  <p class="s12-sub a d3">掃描 QR Code，體驗完整的小物快選滑動購物流程</p>
+  <div class="qr-wrap a sc d4">
+    <img src="data:image/png;base64,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" alt="Shop Swipe QR Code">
+  </div>
+  <div class="s12-url a d5">https://chenghanlee28.github.io/shop-swipe/</div>
+  <div class="s12-footer a d6">小物快選 Shop Swipe &nbsp;·&nbsp; 內部提案簡報 &nbsp;·&nbsp; 2026</div>
+</div>
+</section>
+
+</div><!-- #slides -->
+
+<nav id="nav">
+  <button id="btn-prev">&#8249;</button>
+  <span id="ctr">1 / 12</span>
+  <button id="btn-next">&#8250;</button>
+</nav>
+</div><!-- #deck -->
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const prog = document.getElementById('prog');
+const ctr = document.getElementById('ctr');
+const N = slides.length;
+let cur = 0, busy = false;
+
+/* ── Number count-up animation ── */
+function countUp(el) {
+  const target = parseFloat(el.dataset.target);
+  if (!target) return;
+  const duration = 900, start = performance.now();
+  function frame(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = (target * ease).toFixed(target < 20 ? 1 : 0);
+    if (p < 1) requestAnimationFrame(frame);
+    else el.textContent = target % 1 === 0 ? target : target.toFixed(1);
+  }
+  requestAnimationFrame(frame);
+}
+
+function updateUI() {
+  prog.style.width = `${((cur + 1) / N) * 100}%`;
+  ctr.textContent = `${cur + 1} / ${N}`;
+  // Trigger count-up on stat numbers
+  setTimeout(() => {
+    slides[cur].querySelectorAll('[data-target]').forEach(countUp);
+  }, 300);
+}
+
+function goTo(n) {
+  if (busy || n === cur || n < 0 || n >= N) return;
+  busy = true;
+  const fwd = n > cur;
+  const prev = cur;
+  cur = n;
+
+  const inS = slides[cur];
+  const outS = slides[prev];
+  const enterX = fwd ? '50px' : '-50px';
+  const exitX  = fwd ? '-50px' : '50px';
+
+  // Snap incoming off-screen (no transition)
+  inS.style.cssText =
+    `opacity:0;transform:translateX(${enterX}) scale(1.03);pointer-events:none;position:absolute;inset:0;`;
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    // Animate in
+    inS.style.cssText =
+      `opacity:1;transform:translateX(0) scale(1);pointer-events:all;position:absolute;inset:0;` +
+      `transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);`;
+    inS.classList.add('active');
+
+    // Animate out
+    outS.style.cssText =
+      `opacity:0;transform:translateX(${exitX}) scale(.97);pointer-events:none;position:absolute;inset:0;` +
+      `transition:opacity .45s ease,transform .45s ease;`;
+
+    updateUI();
+
+    setTimeout(() => {
+      outS.classList.remove('active');
+      outS.style.cssText = '';
+      inS.style.cssText = '';
+      busy = false;
+    }, 700);
+  }));
+}
+
+// Init: show slide 0 instantly
+slides[0].classList.add('active');
+slides[0].style.cssText = 'opacity:1;transform:none;pointer-events:all;position:absolute;inset:0;';
+requestAnimationFrame(() => { slides[0].style.cssText = ''; updateUI(); });
+
+document.getElementById('btn-next').addEventListener('click', () => goTo(cur + 1));
+document.getElementById('btn-prev').addEventListener('click', () => goTo(cur - 1));
+document.addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goTo(cur + 1); }
+  if (['ArrowLeft','ArrowUp'].includes(e.key)) { e.preventDefault(); goTo(cur - 1); }
+});
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 60) goTo(cur + (dx < 0 ? 1 : -1));
+}, {passive:true});
+document.getElementById('slides').addEventListener('click', e => {
+  if (!e.target.closest('#nav')) goTo(cur + 1);
+});
+</script>
+</body>
+</html>
