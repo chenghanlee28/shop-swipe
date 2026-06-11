@@ -744,7 +744,7 @@
     .stat-num.stat-right { color: var(--pink); }
     .stat-num.stat-left  { color: #8e8e93; }
     .stat-num.stat-cat   { color: var(--gold); font-size: 16px; }
-    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
     .stat-divider { width: 1px; height: 40px; background: #e5e5ea; flex-shrink: 0; }
 
     /* ─── Product Condition Badge (card) ─── */
@@ -911,10 +911,16 @@
     .ob-icon-like { border-color:var(--pink); color:var(--pink); background:rgba(255,107,129,0.12); }
     .ob-icon-info { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.06); }
     .ob-tutorial-action { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-    .ob-tutorial-hint { font-size: 12px; color: rgba(255,255,255,0.45); }
+    .ob-tutorial-hint { font-size: 13px; color: rgba(255,255,255,0.45); }
     .ob-tip {
-      margin-top: 18px; font-size: 11.5px; color: rgba(255,255,255,0.3);
+      margin-top: 18px; font-size: 12px; color: rgba(255,255,255,0.3);
       padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.07); width: 100%;
+    }
+    /* Show keyboard tip on desktop, touch tip on mobile */
+    .ob-tip-mobile { display: none; }
+    @media (hover: none) and (pointer: coarse) {
+      .ob-tip-desktop { display: none; }
+      .ob-tip-mobile  { display: block; }
     }
 
     /* Slide 3 — Today's Deals */
@@ -929,13 +935,13 @@
     .ob-deal-info { flex: 1; min-width: 0; }
     .ob-deal-name { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ob-deal-price { font-size: 14px; font-weight: 800; color: var(--pink); margin-top: 2px; }
-    .ob-deal-orig { font-size: 11px; color: rgba(255,255,255,0.35); text-decoration: line-through; margin-left: 5px; font-weight: 400; }
+    .ob-deal-orig { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: line-through; margin-left: 5px; font-weight: 400; }
     .ob-deal-badge {
       background: linear-gradient(135deg, #ff4757, #c0392b);
       color: #fff; font-size: 12px; font-weight: 800;
       padding: 5px 9px; border-radius: 10px; white-space: nowrap; flex-shrink: 0;
     }
-    .ob-deal-note { font-size: 11.5px; color: rgba(255,255,255,0.35); margin-bottom: 18px; }
+    .ob-deal-note { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 18px; }
 
     .ob-start-btn {
       display: block; width: 100%;
@@ -961,7 +967,13 @@
     .ob-dot {
       width: 8px; height: 8px; border-radius: 50%;
       background: rgba(255,255,255,0.22);
-      transition: all 0.3s ease;
+      transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
+      cursor: pointer; position: relative; flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Larger touch/click target without changing the visual dot size */
+    .ob-dot::before {
+      content: ''; position: absolute; inset: -10px;
     }
     .ob-dot.active { background: var(--pink); width: 22px; border-radius: 4px; }
     .ob-next-btn {
@@ -1355,28 +1367,35 @@
         <div class="ob-slide-sub">三個動作，輕鬆購物</div>
         <div class="ob-tutorial-list">
           <div class="ob-tutorial-item">
-            <div class="ob-tutorial-icon ob-icon-nope">✕</div>
+            <div class="ob-tutorial-icon ob-icon-nope">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </div>
             <div>
               <div class="ob-tutorial-action">左滑跳過</div>
               <div class="ob-tutorial-hint">不感興趣的商品，快速略過</div>
             </div>
           </div>
           <div class="ob-tutorial-item">
-            <div class="ob-tutorial-icon ob-icon-like">❤</div>
+            <div class="ob-tutorial-icon ob-icon-like">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
             <div>
               <div class="ob-tutorial-action">右滑喜歡</div>
               <div class="ob-tutorial-hint">加入購物車，稍後一次結帳</div>
             </div>
           </div>
           <div class="ob-tutorial-item">
-            <div class="ob-tutorial-icon ob-icon-info">ℹ</div>
+            <div class="ob-tutorial-icon ob-icon-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
             <div>
               <div class="ob-tutorial-action">點擊查看詳情</div>
               <div class="ob-tutorial-hint">點開商品說明後可直接加入購物車</div>
             </div>
           </div>
         </div>
-        <div class="ob-tip">鍵盤快捷：← → 滑動・I 查看詳情・Esc 關閉視窗</div>
+        <div class="ob-tip ob-tip-desktop">鍵盤快捷：← → 滑動・I 查看詳情・Esc 關閉視窗</div>
+        <div class="ob-tip ob-tip-mobile">向左滑跳過・向右滑加入購物車・點圖查看詳情</div>
       </div>
 
       <!-- Slide 3: Today's Deals -->

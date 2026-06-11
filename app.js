@@ -1087,11 +1087,17 @@ function initOnboarding() {
     setTimeout(() => { overlay.style.display = 'none'; }, 480);
   }
 
-  // ── Drag / swipe to navigate slides ──
+  // ── Clickable dots (desktop + mobile) ──
+  document.querySelectorAll('.ob-dot').forEach((dot, i) => {
+    dot.addEventListener('click', () => goToSlide(i));
+  });
+
+  // ── Touch-only drag / swipe (disabled on mouse devices) ──
   let dragStartX = 0, dragStartY = 0, dragDelta = 0;
   let dragging = false, isHorizontalDrag = false;
 
   wrap.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch') return; // desktop: use dots/button, not drag
     dragging = true;
     isHorizontalDrag = false;
     dragStartX = e.clientX;
@@ -1104,7 +1110,6 @@ function initOnboarding() {
     if (!dragging) return;
     const dx = e.clientX - dragStartX;
     const dy = e.clientY - dragStartY;
-    // Wait for first few pixels to determine drag axis
     if (!isHorizontalDrag && Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
     if (!isHorizontalDrag) {
       if (Math.abs(dy) > Math.abs(dx)) { dragging = false; return; } // vertical — let browser scroll
