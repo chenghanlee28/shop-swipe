@@ -976,7 +976,7 @@ function saveOrder(order) {
   orders.unshift(order);
   if (orders.length > 20) orders.pop();
   localStorage.setItem('swipe_orders', JSON.stringify(orders));
-  document.getElementById('btn-open-orders').style.display = '';
+  if (user) document.getElementById('btn-open-orders').style.display = '';
 }
 
 function loadOrders() {
@@ -1254,10 +1254,7 @@ async function init() {
   startCountdownTimer();
   initOnboarding();
 
-  // Show orders button in header if prior orders exist
-  if (loadOrders().length > 0) {
-    document.getElementById('btn-open-orders').style.display = '';
-  }
+  // Orders button is shown only after login (managed by updateUserUI)
 
   // Handle LINE OAuth callback
   if (window.location.search.includes('code=')) {
