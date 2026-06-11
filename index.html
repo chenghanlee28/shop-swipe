@@ -1066,6 +1066,66 @@
     .btn-view-orders:hover { background: rgba(255,107,129,0.14); }
     /* SVG icon buttons in header */
     .btn-icon svg { display: block; }
+    /* Cancel order button inside order card */
+    .btn-cancel-order {
+      width: 100%; padding: 11px; margin-top: 0;
+      background: none; border: 1px solid rgba(255,71,87,0.25);
+      color: #ff4757; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      border-radius: 0 0 16px 16px;
+      transition: background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-cancel-order:hover { background: rgba(255,71,87,0.06); }
+    /* Cancelled order styling */
+    .order-card.is-cancelled { opacity: 0.72; }
+    .order-cancelled-notice {
+      padding: 12px 16px; font-size: 13px; color: #ff4757;
+      border-top: 1px solid #f5f5f5; display: flex; align-items: center; gap: 8px;
+    }
+    .order-cancelled-reason {
+      font-size: 12px; color: var(--text-muted); margin-top: 2px;
+    }
+    /* ─── Cancel Order Modal ─── */
+    .cancel-order-body { padding: 8px 20px 32px; }
+    .cancel-warn-box {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: #fff4f4; border: 1px solid rgba(255,71,87,0.2);
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
+    }
+    .cancel-warn-box svg { flex-shrink: 0; margin-top: 1px; }
+    .cancel-warn-text { font-size: 14px; line-height: 1.55; color: #c0392b; }
+    .cancel-reason-title {
+      font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text);
+    }
+    .cancel-reasons { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
+    .cancel-reason-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border-radius: 12px; cursor: pointer;
+      border: 1.5px solid #e8e8e8; transition: border-color var(--transition), background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cancel-reason-item:has(input:checked) { border-color: var(--pink); background: rgba(255,107,129,0.05); }
+    .cancel-reason-item input[type="radio"] {
+      accent-color: var(--pink); width: 17px; height: 17px; flex-shrink: 0; cursor: pointer;
+    }
+    .cancel-reason-item span { font-size: 14px; color: var(--text); }
+    .cancel-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn-confirm-cancel {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #ff4757, #c0392b);
+      color: #fff; border: none; cursor: pointer;
+      border-radius: 14px; font-size: 16px; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(255,71,87,0.35); transition: opacity var(--transition);
+    }
+    .btn-confirm-cancel:hover { opacity: 0.9; }
+    .btn-keep-order {
+      width: 100%; padding: 14px;
+      background: none; border: 1.5px solid #e8e8e8; color: var(--text-muted);
+      cursor: pointer; border-radius: 14px; font-size: 15px; font-weight: 600;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .btn-keep-order:hover { background: #f5f5f5; border-color: #ccc; }
 
     /* ─── Responsive: 600px (large phone / small tablet) ─── */
     @media (min-width: 600px) {
@@ -1326,6 +1386,52 @@
   </div>
   <div class="orders-list" id="orders-list">
     <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- Cancel Order Confirmation Modal -->
+<div class="modal-overlay" id="cancel-order-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">取消訂單</div>
+      <button class="btn-close-modal" id="btn-close-cancel-modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cancel-order-body">
+      <div class="cancel-warn-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="cancel-warn-text">取消後無法恢復。如訂單已開始備貨，取消可能需要 1–2 個工作日處理。</div>
+      </div>
+      <div class="cancel-reason-title">請選擇取消原因</div>
+      <div class="cancel-reasons">
+        <label class="cancel-reason-item">
+          <input type="radio" name="cancel-reason" value="changed_mind" checked />
+          <span>我改變主意了</span>
+        </label>
+        <label class="cancel-reason-item">
+          <input type="radio" name="cancel-reason" value="wrong_info" />
+          <span>商品資訊與預期不符</span>
+        </label>
+        <label class="cancel-reason-item">
+          <input type="radio" name="cancel-reason" value="found_cheaper" />
+          <span>找到更便宜的價格</span>
+        </label>
+        <label class="cancel-reason-item">
+          <input type="radio" name="cancel-reason" value="long_delivery" />
+          <span>等待時間太長</span>
+        </label>
+        <label class="cancel-reason-item">
+          <input type="radio" name="cancel-reason" value="other" />
+          <span>其他原因</span>
+        </label>
+      </div>
+      <div class="cancel-modal-actions">
+        <button class="btn-confirm-cancel" id="btn-confirm-cancel">確認取消訂單</button>
+        <button class="btn-keep-order" id="btn-keep-order">保留訂單</button>
+      </div>
+    </div>
   </div>
 </div>
 

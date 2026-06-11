@@ -596,7 +596,7 @@ function openProductModal(product) {
     origEl.style.display = '';
     savingsEl.textContent = `省 ${pct}%`;
     savingsEl.style.display = '';
-    welfareEl.innerHTML = '<div class="welfare-badge">🎁 福利商品</div>';
+    welfareEl.innerHTML = '<div class="welfare-badge">福利商品</div>';
   } else {
     origEl.style.display = 'none';
     savingsEl.style.display = 'none';
@@ -638,8 +638,9 @@ function loginAs(name, email, avatar, provider) {
 }
 
 function updateUserUI() {
-  const btnLogin = document.getElementById('btn-header-login');
+  const btnLogin   = document.getElementById('btn-header-login');
   const avatarWrap = document.getElementById('user-avatar-wrap');
+  const btnOrders  = document.getElementById('btn-open-orders');
   if (user) {
     btnLogin.style.display = 'none';
     avatarWrap.style.display = '';
@@ -650,9 +651,13 @@ function updateUserUI() {
     // Pre-fill checkout fields
     document.getElementById('field-name').value = user.name;
     document.getElementById('field-email').value = user.email;
+    // Show orders button if there are past orders
+    if (loadOrders().length > 0) btnOrders.style.display = '';
   } else {
     btnLogin.style.display = '';
     avatarWrap.style.display = 'none';
+    // Hide orders icon on logout
+    btnOrders.style.display = 'none';
   }
 }
 
@@ -886,6 +891,20 @@ document.getElementById('btn-view-orders-success').addEventListener('click', () 
   openOrdersDrawer();
 });
 
+// Cancel order modal — static buttons
+document.getElementById('btn-close-cancel-modal').addEventListener('click', closeCancelOrderModal);
+document.getElementById('btn-keep-order').addEventListener('click', closeCancelOrderModal);
+document.getElementById('btn-confirm-cancel').addEventListener('click', confirmCancelOrder);
+document.getElementById('cancel-order-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('cancel-order-modal')) closeCancelOrderModal();
+});
+
+// Cancel order button — event delegation (button is dynamically rendered inside orders list)
+document.getElementById('orders-list').addEventListener('click', (e) => {
+  const btn = e.target.closest('.btn-cancel-order');
+  if (btn) openCancelOrderModal(btn.dataset.orderId);
+});
+
 document.getElementById('btn-checkout').addEventListener('click', openCheckoutModal);
 
 document.getElementById('btn-close-product-modal').addEventListener('click', closeProductModal);
@@ -985,12 +1004,54 @@ function renderOrders() {
     return;
   }
 
+  const CANCEL_REASON_LABELS = {
+    changed_mind:  '改變主意',
+    wrong_info:    '商品資訊不符',
+    found_cheaper: '找到更便宜的價格',
+    long_delivery: '等待時間太長',
+    other:         '其他原因',
+  };
+
   container.innerHTML = orders.map(order => {
+    const d = new Date(order.createdAt);
+    const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+    const thumbs = order.items.slice(0, 6).map(({ product }) =>
+      `<img class="order-item-thumb" src="${product.image}" alt="${product.name}" loading="lazy" />`
+    ).join('');
+
+    // ── Cancelled order ──
+    if (order.cancelled) {
+      return `
+        <div class="order-card is-cancelled">
+          <div class="order-card-header">
+            <div>
+              <div class="order-id">${order.id}</div>
+              <div class="order-date">${dateStr} · ${order.customer?.name || ''}</div>
+            </div>
+            <div class="order-status-badge" style="background:#f0f0f5;color:#8e8e93">已取消</div>
+          </div>
+          <div class="order-items-row">${thumbs}</div>
+          <div class="order-cancelled-notice">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            <div>
+              <div>訂單已取消</div>
+              ${order.cancelReason ? `<div class="order-cancelled-reason">原因：${CANCEL_REASON_LABELS[order.cancelReason] || order.cancelReason}</div>` : ''}
+            </div>
+          </div>
+          <div class="order-total-row">
+            <span class="order-total-label">訂單金額</span>
+            <span class="order-total-amount" style="color:var(--text-muted)">NT$${order.total.toLocaleString()}</span>
+          </div>
+        </div>`;
+    }
+
+    // ── Active order ──
     const stageIdx = computeOrderStageIdx(order.createdAt);
     const stage = ORDER_STAGES[stageIdx];
     const statusClass = `order-status-${stage.key}`;
-    const d = new Date(order.createdAt);
-    const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    // Can only cancel if order hasn't shipped yet (stage 0 or 1)
+    const canCancel = stageIdx <= 1;
 
     const stageLines = ORDER_STAGES.map((s, i) => {
       const isDone    = i < stageIdx;
@@ -1009,10 +1070,6 @@ function renderOrders() {
         </div>`;
     }).join('');
 
-    const thumbs = order.items.slice(0, 6).map(({ product }) =>
-      `<img class="order-item-thumb" src="${product.image}" alt="${product.name}" loading="lazy" />`
-    ).join('');
-
     return `
       <div class="order-card">
         <div class="order-card-header">
@@ -1028,8 +1085,40 @@ function renderOrders() {
           <span class="order-total-label">訂單金額</span>
           <span class="order-total-amount">NT$${order.total.toLocaleString()}</span>
         </div>
+        ${canCancel ? `<button class="btn-cancel-order" data-order-id="${order.id}">申請取消訂單</button>` : ''}
       </div>`;
   }).join('');
+}
+
+let pendingCancelOrderId = null;
+
+function openCancelOrderModal(orderId) {
+  pendingCancelOrderId = orderId;
+  // Reset radio to default
+  const radios = document.querySelectorAll('input[name="cancel-reason"]');
+  if (radios.length) radios[0].checked = true;
+  document.getElementById('cancel-order-modal').classList.add('open');
+}
+
+function closeCancelOrderModal() {
+  document.getElementById('cancel-order-modal').classList.remove('open');
+  pendingCancelOrderId = null;
+}
+
+function confirmCancelOrder() {
+  if (!pendingCancelOrderId) return;
+  const reason = document.querySelector('input[name="cancel-reason"]:checked')?.value || 'other';
+  const orders = loadOrders();
+  const idx = orders.findIndex(o => o.id === pendingCancelOrderId);
+  if (idx !== -1) {
+    orders[idx].cancelled   = true;
+    orders[idx].cancelReason = reason;
+    orders[idx].cancelledAt = new Date().toISOString();
+    localStorage.setItem('swipe_orders', JSON.stringify(orders));
+  }
+  closeCancelOrderModal();
+  renderOrders();
+  showToast('訂單已取消');
 }
 
 /* ═══════════════════════════════════════════════
